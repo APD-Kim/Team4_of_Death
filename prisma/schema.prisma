@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum ReserveStatus {
+  STANDBY //대기
+  ACCEPT //접수완료
+  CANCEL //취소
+}
+
+model Users {
+  userId       Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique
+  password     String
+  profileImg   String?
+  phoneNumber  String         @unique
+  role         String         @default("user")
+  isPetSitter  Boolean        @default(false)
+  petCategory  String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  trainers     Trainers?
+  reservations Reservations[]
+  reviews      Reviews[]
+  likes        Likes[]
+}
+
+model Trainers {
+  trainerId    Int            @id @default(autoincrement())
+  userId       Int            @unique
+  trainerName  String
+  pricePerTime Int
+  career       Int
+  petCategory  String
+  address      String
+  profileImg   String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  reservations Reservations[]
+  reviews      Reviews[]
+  likes        Likes[]
+}
+
+model Reservations {
+  reservationId Int           @id @default(autoincrement())
+  userId        Int
+  trainerId     Int
+  startDate     DateTime
+  endDate       DateTime
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  status        ReserveStatus @default(STANDBY)
+  users         Users         @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  trainers      Trainers      @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
+}
+
+model Reviews {
+  reviewId  Int      @id @default(autoincrement())
+  userId    Int
+  trainerId Int
+  content   String
+  rating    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users    Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  trainers Trainers @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
+}
+
+model Likes {
+  userId    Int
+  trainerId Int
+  createdAt DateTime @default(now())
+  users     Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  trainers  Trainers @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
+
+  @@unique([userId, trainerId])
+}
