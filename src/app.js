@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import { redisClient } from "./model/redis.js"
 
 import "dotenv/config";
+import CustomError from "./utils/errorHandler.js";
 
 
 
@@ -28,4 +29,5 @@ app.get("/", function (req, res) {
 
 app.listen(process.env.PORT, () => {
   console.log(`${process.env.PORT}번 포트로 서버 실행중`);
+
 });
