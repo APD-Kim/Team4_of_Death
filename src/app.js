@@ -29,5 +29,4 @@ app.get("/", function (req, res) {
 
 app.listen(process.env.PORT, () => {
   console.log(`${process.env.PORT}번 포트로 서버 실행중`);
-
 });
