@@ -11,7 +11,9 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/users', userRouter);
+
+app.use(cookieParser())
+app.use('/users', userRouter)
 app.use('/trainers', trainersRouter);
 
 app.use((err, req, res, next) => {

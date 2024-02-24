@@ -3,6 +3,7 @@ import { UserController } from "../controllers/users.controller.js";
 import { UserService } from "../services/users.service.js";
 import { UserRepository } from "../repositories/users.repository.js";
 import { prisma } from "../utils/prisma.js";
+import { authJwt } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ const userController = new UserController(userService)
 
 router.post('/sign-up', userController.signUp)
 router.post('/login', userController.logIn)
+router.post('/refresh', authJwt, userController.issueRefreshToken)
 
 
 export default router;
