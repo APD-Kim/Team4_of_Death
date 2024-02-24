@@ -13,11 +13,23 @@ export class TrainerRepository {
         address,
       },
     });
+    await this.prisma.users.update({
+      where: {
+        userId: +userId,
+      },
+      data: {
+        isTrainer: true,
+      },
+    });
     return trainer;
   };
 
   findAllTrainer = async () => {
-    const trainer = await this.prisma.trainers.findMany();
+    const trainer = await this.prisma.trainers.findMany({
+      include: {
+        users: true,
+      },
+    });
     return trainer;
   };
 
@@ -61,5 +73,41 @@ export class TrainerRepository {
       },
     });
     return trainerList;
+  };
+
+  findOneUser = async (userId) => {
+    const trainer = await this.prisma.trainers.findFirst({
+      where: {
+        userId: +userId,
+      },
+      include: {
+        users: true,
+      },
+    });
+    return trainer;
+  };
+
+  updateTrainer = async (trainerId, career, petCategory, address, price) => {
+    const trainer = await this.prisma.trainers.update({
+      where: {
+        trainerId: +trainerId,
+      },
+      data: {
+        career,
+        petCategory,
+        address,
+        price,
+      },
+    });
+    return trainer;
+  };
+
+  deleteTrainer = async (trainerId) => {
+    const trainer = await this.prisma.trainers.delete({
+      where: {
+        trainerId: +trainerId,
+      },
+    });
+    return trainer;
   };
 }

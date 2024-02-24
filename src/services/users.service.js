@@ -1,16 +1,10 @@
 import CustomError from "../utils/errorHandler.js";
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
 export class UserService {
   constructor(userRepository) {
     this.userRepository = userRepository;
-  }
-  findUserByEmail = async (email, needError) => {
-    const user = await this.userRepository.findUserByEmail(email);
-    //회원가입할땐 해당 이메일로 생성된 유저가 없어야함
-    if (!user && needError === true) throw new CustomError(404, "해당 유저를 찾을 수 없습니다.")
-
-    return user ? user : null
   }
   signUp = async (email, password, name, phoneNumber, petCategory) => {
     const user = await this.userRepository.findUserByEmail(email);
@@ -50,4 +44,25 @@ export class UserService {
     }
     return user;
   }
+
+
+  signToken = async (userId) => {
+    const token = jwt.sign(
+      { userId: userId },
+      process.env.SECRET_KEY,
+      { expiresIn: '1h' })
+    const refreshToken = jwt.sign(
+      { userId: userId },
+      process.env.SECRET_KEY,
+      { expiresIn: '7d' })
+    const bearerToken = `Bearer ${token}`
+    const bearerRefreshToken = `Bearer ${refreshToken}`
+
+    return {
+      bearerToken,
+      bearerRefreshToken
+    }
+
+  }
 }
+
