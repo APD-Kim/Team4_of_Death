@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,12 +5,6 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
-}
-
-enum ReserveStatus {
-  STANDBY //대기
-  ACCEPT //접수완료
-  CANCEL //취소
 }
 
 model Users {
@@ -27,29 +15,29 @@ model Users {
   profileImg   String?
   phoneNumber  String         @unique
   role         String         @default("user")
-  isTrainer    Boolean        @default(false)
   petCategory  String
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
-  trainers     Trainers?
+  isTrainer    Boolean        @default(false)
+  likes        Likes[]
   reservations Reservations[]
   reviews      Reviews[]
-  likes        Likes[]
+  trainers     Trainers?
 }
 
 model Trainers {
   trainerId    Int            @id @default(autoincrement())
   userId       Int            @unique
-  price        Int
   career       Int
   petCategory  String
   address      String
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
-  users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  price        Int
+  likes        Likes[]
   reservations Reservations[]
   reviews      Reviews[]
-  likes        Likes[]
+  users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 model Reservations {
@@ -61,8 +49,11 @@ model Reservations {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   status        ReserveStatus @default(STANDBY)
-  users         Users         @relation(fields: [userId], references: [userId], onDelete: Cascade)
   trainers      Trainers      @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
+  users         Users         @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([trainerId], map: "Reservations_trainerId_fkey")
+  @@index([userId], map: "Reservations_userId_fkey")
 }
 
 model Reviews {
@@ -73,17 +64,26 @@ model Reviews {
   rating    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  trainers  Trainers @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
+  users     Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-  users    Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  trainers Trainers @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
+  @@index([trainerId], map: "Reviews_trainerId_fkey")
+  @@index([userId], map: "Reviews_userId_fkey")
 }
 
 model Likes {
   userId    Int
   trainerId Int
   createdAt DateTime @default(now())
-  users     Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
   trainers  Trainers @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
+  users     Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@unique([userId, trainerId])
+  @@index([trainerId], map: "Likes_trainerId_fkey")
+}
+
+enum ReserveStatus {
+  STANDBY
+  ACCEPT
+  CANCEL
 }
