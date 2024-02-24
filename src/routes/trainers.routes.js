@@ -11,8 +11,10 @@ const trainerController = new TrainerController(trainerService);
 const router = express.Router();
 
 router.post('/', trainerController.registerTrainer);
+router.get('/', trainerController.findAllTrainer);
+router.get('/:trainerId', trainerController.findOneTrainer);
 
 /**카테고리별 펫시터 조회 */
-router.get('/', trainerController.findTrainerByCategory);
+router.get('/category/:category', trainerController.findTrainerByCategory);
 
 export default router;

@@ -3,11 +3,10 @@ export class TrainerRepository {
     this.prisma = prisma;
   }
 
-  registerTrainer = async (userId, trainerName, price, career, petCategory, address) => {
+  registerTrainer = async (userId, price, career, petCategory, address) => {
     const trainer = await this.prisma.trainers.create({
       data: {
         userId,
-        trainerName,
         price,
         career,
         petCategory,
@@ -17,11 +16,28 @@ export class TrainerRepository {
     return trainer;
   };
 
+  findAllTrainer = async () => {
+    const trainer = await this.prisma.trainers.findMany();
+    return trainer;
+  };
+
+  findOneTrainer = async (trainerId) => {
+    const trainer = await this.prisma.trainers.findFirst({
+      where: {
+        trainerId: +trainerId,
+      },
+      include: {
+        users: true,
+      },
+    });
+    return trainer;
+  };
+
   /**카테고리별 펫시터 조회 */
   findTrainerByCategory = async (category) => {
     const trainerList = await this.prisma.trainers.findMany({
       where: {
-        petCategory: 'cag',
+        petCategory: category,
       },
 
       select: {

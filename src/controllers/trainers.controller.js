@@ -1,3 +1,4 @@
+import CustomError from '../utils/errorHandler.js';
 export class TrainerController {
   constructor(trainerService) {
     this.trainerService = trainerService;
@@ -17,11 +18,34 @@ export class TrainerController {
     }
   };
 
+  findAllTrainer = async (req, res, next) => {
+    try {
+      const trainer = await this.trainerService.findAllTrainer();
+      return res.status(202).json({ message: trainer });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  findOneTrainer = async (req, res, next) => {
+    try {
+      const { trainerId } = req.params;
+      if (!trainerId) {
+        throw new CustomError(404, 'trainer 아이디가 올바르지 않습니다..');
+      }
+
+      const trainer = await this.trainerService.findOneTrainer(trainerId);
+      return res.status(200).json({ message: trainer });
+    } catch (err) {
+      next(err);
+    }
+  };
+
   /**카테고리별 펫시터 조회 */
   findTrainerByCategory = async (req, res, next) => {
     try {
-      const str = req.query.category;
-      const category = str.toLowerCase();
+      let { category } = req.params;
+      category = category.toLowerCase();
 
       if (!['dog', 'cat', 'bird'].includes(category)) {
         throw new CustomError(400, 'category 가 올바르지 않습니다.');
