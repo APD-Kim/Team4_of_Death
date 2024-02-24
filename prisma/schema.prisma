@@ -27,7 +27,7 @@ model Users {
   profileImg   String?
   phoneNumber  String         @unique
   role         String         @default("user")
-  isPetSitter  Boolean        @default(false)
+  isTrainer    Boolean        @default(false)
   petCategory  String
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -40,12 +40,10 @@ model Users {
 model Trainers {
   trainerId    Int            @id @default(autoincrement())
   userId       Int            @unique
-  trainerName  String
-  pricePerTime Int
+  price        Int
   career       Int
   petCategory  String
   address      String
-  profileImg   String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
@@ -72,7 +70,7 @@ model Reviews {
   userId    Int
   trainerId Int
   content   String
-  rating    Int
+  rating    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
