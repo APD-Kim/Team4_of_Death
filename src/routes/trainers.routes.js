@@ -13,5 +13,7 @@ const router = express.Router();
 router.post('/', trainerController.registerTrainer);
 router.get('/', trainerController.findAllTrainer);
 router.get('/:trainerId', trainerController.findOneTrainer);
+router.put('/:trainerId', trainerController.updateTrainer);
+router.delete('/:trainerId', trainerController.deleteTrainer);
 
 export default router;
