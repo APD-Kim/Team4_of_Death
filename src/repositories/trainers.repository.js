@@ -57,4 +57,28 @@ export class TrainerRepository {
     });
     return trainer;
   };
+
+  updateTrainer = async (trainerId, career, petCategory, address, price) => {
+    const trainer = await this.prisma.trainers.update({
+      where: {
+        trainerId: +trainerId,
+      },
+      data: {
+        career,
+        petCategory,
+        address,
+        price,
+      },
+    });
+    return trainer;
+  };
+
+  deleteTrainer = async (trainerId) => {
+    const trainer = await this.prisma.trainers.delete({
+      where: {
+        trainerId: +trainerId,
+      },
+    });
+    return trainer;
+  };
 }
