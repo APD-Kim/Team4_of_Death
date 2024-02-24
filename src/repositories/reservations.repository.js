@@ -17,7 +17,11 @@ export class ReservationRepository {
         reservationId: true,
         startDate: true,
         endDate: true,
-        users: true,
+        users: {
+          select: {
+            petCategory: true,
+          },
+        },
       },
       orderBy: {
         startDate: 'asc',
