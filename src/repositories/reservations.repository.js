@@ -10,16 +10,14 @@ export class ReservationRepository {
       where: {
         trainerId: +trainerId,
         startDate: {
-          gte: today.toISOString(),
+          gte: today.toISOString(), // 오늘 이후의 날짜부터 보여줌
         },
       },
       select: {
         reservationId: true,
         startDate: true,
         endDate: true,
-        trainers: {
-          petCategory: true,
-        },
+        users: true,
       },
       orderBy: {
         startDate: 'asc',
