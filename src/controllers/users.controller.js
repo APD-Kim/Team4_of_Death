@@ -1,4 +1,5 @@
 import CustomError from "../utils/errorHandler.js";
+
 export class UserController {
 
   constructor(userService) {
@@ -54,6 +55,12 @@ export class UserController {
   }
   issueRefreshToken = async (req, res, next) => {
     const { userId } = req.user;
-    res.status(200).json({ message: "good" })
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) {
+      throw new CustomError(400, "리프레시 토큰이 존재하지 않습니다.")
+    }
+    //리프레시 토큰이 있다면
+
+    res.status(200).json({ message: refreshToken })
   }
 }

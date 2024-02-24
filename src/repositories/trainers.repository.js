@@ -57,4 +57,38 @@ export class TrainerRepository {
     });
     return trainer;
   };
+
+  LikeTrainer = async (userId, trainerId) => {
+    const trainer = await this.prisma.likes.create({
+      data: {
+        userId: Number(userId),
+        trainerId: Number(trainerId)
+      }
+    })
+    console.log(trainer);
+    return trainer;
+  }
+
+  existLike = async (userId, trainerId) => {
+    const trainer = await this.prisma.likes.findFirst({
+      where: {
+        userId: +userId,
+        trainerId: +trainerId
+      }
+    });
+    return trainer;
+  }
+
+  cancelLikeTrainer = async (userId, trainerId) => {
+    const cancelLike = await this.prisma.likes.delete({
+      where: {
+        userId_trainerId: {
+          userId: +userId,
+          trainerId: +trainerId
+        },
+      },
+    })
+    return cancelLike
+  }
+
 }

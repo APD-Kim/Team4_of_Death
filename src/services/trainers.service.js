@@ -7,7 +7,6 @@ export class TrainerService {
 
   registerTrainer = async (userId, price, career, petCategory, address) => {
     const user = await this.trainerRepository.findOneUser(userId);
-    console.log('여기가 콘솔임', user);
 
     if (user !== null) {
       if (user.users.isTrainer === true) {
@@ -38,4 +37,21 @@ export class TrainerService {
     }
     return trainer;
   };
+
+  LikeTrainer = async (userId, trainerId) => {
+    const findLike = await this.trainerRepository.existLike(userId, trainerId)
+    if (findLike) {
+      await this.trainerRepository.cancelLikeTrainer(userId, trainerId)
+      return {
+        status: "cancelLiked"
+      }
+    }
+    const liked = await this.trainerRepository.LikeTrainer(userId, trainerId)
+    if (!liked) {
+      throw new CustomError(400, "좋아요 생성중 오류가 발생했습니다.")
+    }
+    return {
+      status: "liked"
+    }
+  }
 }

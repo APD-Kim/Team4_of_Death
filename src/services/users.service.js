@@ -1,6 +1,7 @@
 import CustomError from "../utils/errorHandler.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import { redisCli } from "../model/redis.js"
 
 export class UserService {
   constructor(userRepository) {
@@ -16,7 +17,7 @@ export class UserService {
       throw new CustomError(409, "이미 가입된 전화번호입니다.")
     }
     const hashedPassword = await bcrypt.hash(password, 10)
-    const createdUser = await this.userRepository.signUpWithEmail(email, hashedPassword, name, phoneNumber, petCategory)
+    const createdUser = await this.userRepository.signUpWithEmail(email, hashedPassword, name, phoneNumber, petCategory);
     return {
       userId: createdUser.userId,
       name: createdUser.name,
@@ -57,6 +58,7 @@ export class UserService {
       { expiresIn: '7d' })
     const bearerToken = `Bearer ${token}`
     const bearerRefreshToken = `Bearer ${refreshToken}`
+    await redisCli.set(`refreshToken:${userId}`, refreshToken, { EX: 3600 * 24 * 7 })
 
     return {
       bearerToken,

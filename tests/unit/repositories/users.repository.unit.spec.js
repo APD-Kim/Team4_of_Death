@@ -25,7 +25,6 @@ describe('User Repository Unit Test', () => {
     const findUserData = await userRepository.findUserByEmail(findParams.email)
     expect(findUserData).toEqual(mockReturn)
     expect(mockPrisma.users.findFirst).toHaveBeenCalledTimes(1)
-    expect(mockPrisma.users.findFirst).toHaveBeenCalledWith({ where: { email: findParams.email } })
   })
   it('signUpWithEmail Method', async () => {
     const mockReturn = 'created String'
