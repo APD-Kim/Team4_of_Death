@@ -3,10 +3,10 @@ import CustomError from '../../../src/utils/errorHandler.js';
 import { TrainerController } from '../../../src/controllers/trainers.controller.js';
 
 const mockTrainerService = {
-  validatePhoneNumber: jest.fn(),
-  signUp: jest.fn(),
-  validUser: jest.fn(),
-  signToken: jest.fn(),
+  registerTrainer: jest.fn(),
+  findAllTrainer: jest.fn(),
+  findOneTrainer: jest.fn(),
+  findTrainerByCategory: jest.fn(),
 };
 
 const mockRequest = {

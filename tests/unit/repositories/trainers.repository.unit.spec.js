@@ -3,8 +3,9 @@ import { TrainerRepository } from '../../../src/repositories/trainers.repository
 
 const mockPrisma = {
   users: {
-    findFirst: jest.fn(),
     create: jest.fn(),
+    findMany: jest.fn(),
+    findFirst: jest.fn(),
   },
 };
 
