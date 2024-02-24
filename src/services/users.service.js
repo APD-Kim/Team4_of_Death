@@ -1,21 +1,19 @@
 import CustomError from "../utils/errorHandler.js";
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
 export class UserService {
   constructor(userRepository) {
     this.userRepository = userRepository;
   }
-  findUserByEmail = async (email, needError) => {
-    const user = await this.userRepository.findUserByEmail(email);
-    //회원가입할땐 해당 이메일로 생성된 유저가 없어야함
-    if (!user && needError === true) throw new CustomError(404, "해당 유저를 찾을 수 없습니다.")
-
-    return user ? user : null
-  }
   signUp = async (email, password, name, phoneNumber, petCategory) => {
+    const user = await this.userRepository.findUserByEmail(email);
+    if (user) {
+      throw new CustomError(409, "이미 가입된 이메일입니다.")
+    }
     const findUser = await this.userRepository.findUserByPhoneNumber(phoneNumber)
     if (findUser) {
-      throw new CustomError(400, "이미 가입된 전화번호입니다.")
+      throw new CustomError(409, "이미 가입된 전화번호입니다.")
     }
     const hashedPassword = await bcrypt.hash(password, 10)
     const createdUser = await this.userRepository.signUpWithEmail(email, hashedPassword, name, phoneNumber, petCategory)
@@ -39,8 +37,6 @@ export class UserService {
   }
   validUser = async (email, password) => {
     const user = await this.userRepository.findUserByEmail(email);
-    console.log(user);
-    //회원가입할땐 해당 이메일로 생성된 유저가 없어야함
     if (!user) throw new CustomError(404, "이메일을 다시 한번 확인해주세요.")
     const comparePassword = await bcrypt.compare(password, user.password)
     if (!comparePassword) {
@@ -48,4 +44,25 @@ export class UserService {
     }
     return user;
   }
+
+
+  signToken = async (userId) => {
+    const token = jwt.sign(
+      { userId: userId },
+      process.env.SECRET_KEY,
+      { expiresIn: '1h' })
+    const refreshToken = jwt.sign(
+      { userId: userId },
+      process.env.SECRET_KEY,
+      { expiresIn: '7d' })
+    const bearerToken = `Bearer ${token}`
+    const bearerRefreshToken = `Bearer ${refreshToken}`
+
+    return {
+      bearerToken,
+      bearerRefreshToken
+    }
+
+  }
 }
+
