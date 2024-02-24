@@ -38,14 +38,4 @@ export class TrainerService {
     }
     return trainer;
   };
-
-  updateTrainer = async (trainerId, career, petCategory, address, price) => {
-    const trainer = await this.trainerRepository.updateTrainer(trainerId, career, petCategory, address, price);
-    return trainer;
-  };
-
-  deleteTrainer = async (trainerId) => {
-    const trainer = await this.trainerRepository.deleteTrainer(trainerId);
-    return trainer;
-  };
 }

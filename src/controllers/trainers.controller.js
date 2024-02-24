@@ -39,35 +39,4 @@ export class TrainerController {
       next(err);
     }
   };
-
-  updateTrainer = async (req, res, next) => {
-    try {
-      const { trainerId } = req.params;
-      if (!trainerId) {
-        throw new CustomError(404, 'trainer 아이디가 올바르지 않습니다..');
-      }
-      const { career, petCategory, address, price } = req.body;
-      if (!career || !petCategory || !address || !price) {
-        throw new CustomError(404, '형식이 맞지 않습니다.');
-      }
-      const trainer = await this.trainerService.updateTrainer(trainerId, career, petCategory, address, price);
-      return res.status(200).json({ message: trainer });
-    } catch (err) {
-      next(err);
-    }
-  };
-
-  deleteTrainer = async (req, res, next) => {
-    try {
-      const { trainerId } = req.params;
-      if (!trainerId) {
-        throw new CustomError(404, 'trainer 아이디가 올바르지 않습니다..');
-      }
-
-      await this.trainerService.deleteTrainer(trainerId);
-      return res.status(200).json({ message: '정상적으로 삭제되었습니다.' });
-    } catch (err) {
-      next(err);
-    }
-  };
 }
