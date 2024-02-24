@@ -45,6 +45,9 @@ export class TrainerController {
   findTrainerByCategory = async (req, res, next) => {
     try {
       let { category } = req.params;
+      if (!category) {
+        throw new CustomError(400, 'category 값이 비어있습니다.');
+      }
       category = category.toLowerCase();
 
       if (!['dog', 'cat', 'bird'].includes(category)) {
@@ -53,7 +56,7 @@ export class TrainerController {
 
       const trainerList = await this.trainerService.findTrainerByCategory(category);
 
-      return res.status(200).json({ message: trainerList });
+      return res.status(200).json({ message: '카테고리별 펫시터 조회 완료', data: trainerList });
     } catch (err) {
       next(err);
     }
