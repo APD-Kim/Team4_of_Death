@@ -8,7 +8,7 @@ export class ReviewController {
   postReview = async (req, res, next) => {
     try {
       const { userId } = req.user;
-      const { trainerId } = req.query.orderValue; 
+      const { trainerId } = req.query; 
       const { content, rating } = req.body;
       
       if (!userId || !trainerId || !content || !rating) {
@@ -29,7 +29,7 @@ export class ReviewController {
 
   getReviews = async (req, res, next) => {
     try {
-      const { trainerId } = req.query.orderValue; 
+      const { trainerId } = req.query; 
     
       if (!trainerId) {
         throw new CustomError(404, '알 수 없는 펫시터입니다.'); 
@@ -44,7 +44,7 @@ export class ReviewController {
       return res.status(200).json({ data: reviews });
 
     } catch (error) {
-      next();
+      next(error);
     }
   };
   
@@ -58,12 +58,15 @@ export class ReviewController {
         throw new CustomError(404, "수정하신 리뷰 정보가 잘못되었습니다.")
       }
       
-      const review = await this.reviewService.findUnique(reviewId);
+      const review = await this.reviewService.findUserIdByReviewId(reviewId);
 
       if(!review) {
         throw new CustomError(404, "해당 리뷰를 찾을 수 없습니다.")
       }
-  
+      
+      console.log("user.userId:", user.userId)
+      console.log("review.userId:", review.userId)
+
       if (user.userId !== review.userId) {
         throw new CustomError(400, '리뷰를 수정할 권한이 없습니다.')
       }
@@ -90,7 +93,7 @@ export class ReviewController {
         throw new CustomError(404, "리뷰를 찾을 수 없습니다.")
       }
       
-      const review = await this.reviewService.findReview(reviewId);
+      const review = await this.reviewService.findUserIdByReviewId(reviewId);
 
       if (user.userId !== review.userId) {
         throw new CustomError(400, '리뷰를 수정할 권한이 없습니다.')
@@ -101,7 +104,9 @@ export class ReviewController {
       return res
         .status(201)
         .json({ success: true, message: '리뷰를 삭제하였습니다.' });
-    } catch (error) {next(error);}
+    } catch (error) {
+      next(error);
+    }
     
   };
 

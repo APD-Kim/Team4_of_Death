@@ -21,25 +21,42 @@ export class ReviewService {
     return createdReview; 
   }
 
-  findReviews = async () => {
+  findReviews = async (trainerId) => {
     const foundReviews = await this.reviewRepository.findReviews(trainerId); 
 
-    return foundReviews; 
+    return foundReviews.map((e)=>{
+      return{
+        reviewId: e.reviewId,
+        name: e.users.name,
+        rating: e.rating,
+        content: e.content,
+        createdAt: e.createdAt,
+        updatedAt: e.updatedAt,
+      }
+    })
+  }; 
+  
+
+  findUserIdByReviewId = async (reviewId) => {
+    const foundReview = await this.reviewRepository.findUserIdByReviewId(reviewId)
+
+    return foundReview;
   }
 
-  findReview = async () => {
-    const foundReview = await this.reviewRepository.findReview(reviewId)
-
-    return foundReview; 
-  }
-
-  updateReview = async () => {
+  updateReview = async (reviewId, content, rating) => {
     const updatedReview = await this.reviewRepository.updateReview(reviewId, content, rating); 
 
-    return updatedReview;
+    return {
+      reviewId: updatedReview.reviewId,
+      name: updatedReview.users.name,
+      content: updatedReview.content, 
+      rating: updatedReview.rating,
+      createdAt: updatedReview.createAt,
+      updatedAt: updatedReview.updatedAt,
+    };
   }
 
-  deleteReview = async () => {
+  deleteReview = async (reviewId) => {
     const deletedReview = await this.reviewRepository.deleteReview(reviewId);
 
     return deletedReview; 

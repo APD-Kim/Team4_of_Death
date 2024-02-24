@@ -6,11 +6,10 @@ export class ReviewRepository {
   createReview = async (trainerId, userId, content, rating) => {
     const review = await this.prisma.reviews.create({
       data: {
-        userId, 
-        trainerId, 
+        userId: +userId,
+        trainerId: +trainerId, 
         content, 
         rating,
-        createdAt,
       }
     })
 
@@ -21,9 +20,8 @@ export class ReviewRepository {
     const review = await this.prisma.reviews.findMany({
       where: {trainerId: +trainerId},
       select: {
-        user: {
-          select: {name: true}
-        },
+        reviewId: true,
+        users: {select: {name: true}},
         rating: true,
         content: true,
         createdAt: true,
@@ -34,15 +32,13 @@ export class ReviewRepository {
     return review
   }
 
-  findReview = async (reviewId) => {
+  findUserIdByReviewId = async (reviewId) => {
     const review = await this.prisma.reviews.findUnique({
       where: {
         reviewId: +reviewId
       },
       select: {
         userId: true,
-        content: true, 
-        rating: true,
       } 
     }) 
 
@@ -52,12 +48,19 @@ export class ReviewRepository {
 
   updateReview = async (reviewId, content, rating) => {
     const review = await this.prisma.reviews.update({
-      where: {reviewId: +reviewId}, 
-      select: {
-        content, 
-        rating, 
-        updatedAt,
-      }
+        where: {reviewId: +reviewId}, 
+        data: {
+          content, 
+          rating,
+        },
+        select: {
+          reviewId: true,
+          users: {select: {name: true}},
+          rating: true,
+          content: true,
+          createdAt: true,
+          updatedAt: true,
+        }
     })
 
     return review;
