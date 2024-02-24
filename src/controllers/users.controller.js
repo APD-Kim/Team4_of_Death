@@ -1,5 +1,6 @@
 import CustomError from "../utils/errorHandler.js";
-
+import pkg from "jsonwebtoken";
+const { sign, verfiy } = pkg;
 export class UserController {
 
   constructor(userService) {
@@ -25,6 +26,29 @@ export class UserController {
       const singedUser = await this.userService.signUp(email, password, name, phoneNumber, petCategory)
 
       res.status(201).json({ message: "회원가입 완료", data: singedUser })
+    } catch (err) {
+      next(err)
+    }
+  }
+  logIn = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      if (!email || !password) {
+        throw new CustomError(400, "요청이 잘못 되었습니다.")
+      }
+      const user = await this.userService.validUser(email, password)
+      //이메일과 비밀번호가 일치하는지 확인함
+      const token = sign(
+        { userId: user.userId },
+        process.env.SECRET_KEY,
+        { expiresIn: '1h' })
+      res.cookie('authorization', token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        expires: new Date(Date.now() + 1000 * 60 * 60)
+      })
+      res.status(200).json({ accessToken: token })
     } catch (err) {
       next(err)
     }

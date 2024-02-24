@@ -37,4 +37,15 @@ export class UserService {
     }
     return validate;
   }
+  validUser = async (email, password) => {
+    const user = await this.userRepository.findUserByEmail(email);
+    console.log(user);
+    //회원가입할땐 해당 이메일로 생성된 유저가 없어야함
+    if (!user) throw new CustomError(404, "이메일을 다시 한번 확인해주세요.")
+    const comparePassword = await bcrypt.compare(password, user.password)
+    if (!comparePassword) {
+      throw new CustomError(400, "비밀번호를 다시 한번 확인해주세요.")
+    }
+    return user;
+  }
 }
