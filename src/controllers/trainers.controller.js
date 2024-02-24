@@ -1,3 +1,4 @@
+import CustomError from '../utils/errorHandler.js';
 export class TrainerController {
   constructor(trainerService) {
     this.trainerService = trainerService;
@@ -40,6 +41,27 @@ export class TrainerController {
     }
   };
 
+  /**카테고리별 펫시터 조회 */
+  findTrainerByCategory = async (req, res, next) => {
+    try {
+      let { category } = req.params;
+      if (!category) {
+        throw new CustomError(400, 'category 값이 비어있습니다.');
+      }
+      category = category.toLowerCase();
+
+      if (!['dog', 'cat', 'bird'].includes(category)) {
+        throw new CustomError(400, 'category 가 올바르지 않습니다.');
+      }
+
+      const trainerList = await this.trainerService.findTrainerByCategory(category);
+
+      return res.status(200).json({ message: '카테고리별 펫시터 조회 완료', data: trainerList });
+       } catch (err) {
+      next(err);
+       }
+    };
+      
   updateTrainer = async (req, res, next) => {
     try {
       const { trainerId } = req.params;
@@ -66,6 +88,7 @@ export class TrainerController {
 
       await this.trainerService.deleteTrainer(trainerId);
       return res.status(200).json({ message: '정상적으로 삭제되었습니다.' });
+
     } catch (err) {
       next(err);
     }

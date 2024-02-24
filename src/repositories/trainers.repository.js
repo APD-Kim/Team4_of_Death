@@ -13,7 +13,6 @@ export class TrainerRepository {
         address,
       },
     });
-
     await this.prisma.users.update({
       where: {
         userId: +userId,
@@ -44,6 +43,36 @@ export class TrainerRepository {
       },
     });
     return trainer;
+  };
+
+  /**카테고리별 펫시터 조회 */
+  findTrainerByCategory = async (category) => {
+    const trainerList = await this.prisma.trainers.findMany({
+      where: {
+        petCategory: category,
+      },
+
+      select: {
+        userId: true,
+        career: true,
+        petCategory: true,
+        address: true,
+        createdAt: true,
+        price: true,
+        reviews: {
+          select: {
+            content: true,
+            rating: true,
+          },
+        },
+        likes: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+    return trainerList;
   };
 
   findOneUser = async (userId) => {
