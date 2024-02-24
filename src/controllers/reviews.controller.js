@@ -21,6 +21,10 @@ export class ReviewController {
         throw new CustomError(404, "리뷰 생성에 실패했습니다.")
       }
 
+      if(rating < 0 || rating > 5){
+        throw new CustomError(400, "평점은 1~5점 입니다.")
+      }
+
       return res.status(201).json({ data: review });
     } catch (error) {
       next(error); 
@@ -57,7 +61,11 @@ export class ReviewController {
       if (!reviewId || !content || !rating || !user.userId) {
         throw new CustomError(404, "수정하신 리뷰 정보가 잘못되었습니다.")
       }
-      
+
+      if(rating < 0 || rating > 5){
+        throw new CustomError(400, "평점은 1~5점 입니다.")
+      }
+
       const review = await this.reviewService.findUserIdByReviewId(reviewId);
 
       if(!review) {
