@@ -1,10 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1708776483348" clover="3.2.0">
-  <project timestamp="1708776483348" name="All files">
-    <metrics statements="72" coveredstatements="65" conditionals="28" coveredconditionals="28" methods="14" coveredmethods="12" elements="114" coveredelements="105" complexity="0" loc="72" ncloc="72" packages="4" files="4" classes="4"/>
+<coverage generated="1708799802230" clover="3.2.0">
+  <project timestamp="1708799802230" name="All files">
+    <metrics statements="128" coveredstatements="105" conditionals="66" coveredconditionals="54" methods="19" coveredmethods="17" elements="213" coveredelements="176" complexity="0" loc="128" ncloc="128" packages="4" files="5" classes="5"/>
     <package name="controllers">
-      <metrics statements="29" coveredstatements="27" conditionals="18" coveredconditionals="18" methods="4" coveredmethods="3"/>
-      <file name="users.controller.js" path="C:\Users\APDAPD\Desktop\mysql\Team4Pr\src\controllers\users.controller.js">
+      <metrics statements="85" coveredstatements="67" conditionals="56" coveredconditionals="44" methods="9" coveredmethods="8"/>
+      <file name="reviews.controller.js" path="/Users/t2023-m0021/Documents/GitHub/Team4_of_Death/src/controllers/reviews.controller.js">
+        <metrics statements="56" coveredstatements="40" conditionals="38" coveredconditionals="26" methods="5" coveredmethods="5"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="14" count="1" type="cond" truecount="5" falsecount="1"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="20" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="24" count="1" type="cond" truecount="3" falsecount="1"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="28" count="1" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="38" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="44" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="56" count="1" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="58" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="61" count="1" type="cond" truecount="5" falsecount="1"/>
+        <line num="62" count="0" type="stmt"/>
+        <line num="65" count="1" type="cond" truecount="3" falsecount="1"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="69" count="1" type="stmt"/>
+        <line num="71" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="72" count="0" type="stmt"/>
+        <line num="75" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="76" count="0" type="stmt"/>
+        <line num="79" count="1" type="stmt"/>
+        <line num="81" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="82" count="0" type="stmt"/>
+        <line num="85" count="1" type="stmt"/>
+        <line num="88" count="0" type="stmt"/>
+        <line num="92" count="1" type="stmt"/>
+        <line num="93" count="1" type="stmt"/>
+        <line num="94" count="1" type="stmt"/>
+        <line num="95" count="1" type="stmt"/>
+        <line num="97" count="1" type="cond" truecount="3" falsecount="1"/>
+        <line num="98" count="0" type="stmt"/>
+        <line num="101" count="1" type="stmt"/>
+        <line num="103" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="104" count="0" type="stmt"/>
+        <line num="107" count="1" type="stmt"/>
+        <line num="109" count="1" type="stmt"/>
+        <line num="113" count="0" type="stmt"/>
+      </file>
+      <file name="users.controller.js" path="/Users/t2023-m0021/Documents/GitHub/Team4_of_Death/src/controllers/users.controller.js">
         <metrics statements="29" coveredstatements="27" conditionals="18" coveredconditionals="18" methods="4" coveredmethods="3"/>
         <line num="5" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
@@ -39,7 +98,7 @@
     </package>
     <package name="repositories">
       <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
-      <file name="users.repository.js" path="C:\Users\APDAPD\Desktop\mysql\Team4Pr\src\repositories\users.repository.js">
+      <file name="users.repository.js" path="/Users/t2023-m0021/Documents/GitHub/Team4_of_Death/src/repositories/users.repository.js">
         <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
         <line num="3" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
@@ -55,7 +114,7 @@
     </package>
     <package name="services">
       <metrics statements="30" coveredstatements="25" conditionals="10" coveredconditionals="10" methods="5" coveredmethods="4"/>
-      <file name="users.service.js" path="C:\Users\APDAPD\Desktop\mysql\Team4Pr\src\services\users.service.js">
+      <file name="users.service.js" path="/Users/t2023-m0021/Documents/GitHub/Team4_of_Death/src/services/users.service.js">
         <metrics statements="30" coveredstatements="25" conditionals="10" coveredconditionals="10" methods="5" coveredmethods="4"/>
         <line num="7" count="1" type="stmt"/>
         <line num="9" count="1" type="stmt"/>
@@ -91,7 +150,7 @@
     </package>
     <package name="utils">
       <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-      <file name="errorHandler.js" path="C:\Users\APDAPD\Desktop\mysql\Team4Pr\src\utils\errorHandler.js">
+      <file name="errorHandler.js" path="/Users/t2023-m0021/Documents/GitHub/Team4_of_Death/src/utils/errorHandler.js">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="3" count="13" type="stmt"/>
         <line num="4" count="13" type="stmt"/>

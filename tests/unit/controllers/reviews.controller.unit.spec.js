@@ -26,7 +26,7 @@ const mockResponse = {
 
 const mockNext = jest.fn();
 
-describe('User Controller Unit Test', () =>  {
+describe('Review Controller Unit Test', () =>  {
   beforeEach(() => {
     jest.resetAllMocks();
     mockResponse.status.mockReturnValue(mockResponse);
@@ -53,5 +53,64 @@ describe('User Controller Unit Test', () =>  {
     expect(mockReviewService.createReview).toHaveBeenCalledTimes(1);
     expect(mockResponse.status).toHaveBeenCalledWith(201)
     expect(mockResponse.json).toHaveBeenCalledWith({ data: mockReturn })
+  })
+
+  it("getReviews method test", async () => {
+    const mockReturn = 'getReviews complete';
+
+    mockRequest.query = {
+      trainerId: 3,
+    }
+
+    mockReviewService.findReviews.mockResolvedValue(mockReturn);
+
+    await reviewController.getReviews(mockRequest, mockResponse, mockNext);
+    expect(mockReviewService.findReviews).toHaveBeenCalledTimes(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(200);
+    expect(mockResponse.json).toHaveBeenCalledWith({ data: mockReturn });
+  })
+
+  it("patchReview method test", async () => {
+    const mockReturn = 'patchReview complete';
+    const mockReturn2 = {userId: 1}
+
+    mockRequest.params = {
+      reviewId: 3,
+    }
+    
+    mockRequest.user = {
+      userId: 1,
+    }
+
+    mockReviewService.findUserIdByReviewId.mockResolvedValue(mockReturn2);
+    mockReviewService.updateReview.mockResolvedValue(mockReturn);
+
+    await reviewController.patchReview(mockRequest, mockResponse, mockNext);
+    expect(mockReviewService.findUserIdByReviewId).toHaveBeenCalledTimes(1);
+    expect(mockReviewService.updateReview).toHaveBeenCalledTimes(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(200);
+    expect(mockResponse.json).toHaveBeenCalledWith({ data: mockReturn });
+  })
+
+  it("deleteReview method test", async () => {
+    const mockReturn = 'deleteReview complete';
+    const mockReturn2 = {userId: 1}
+
+    mockRequest.params = {
+      reviewId: 3,
+    }
+    
+    mockRequest.user = {
+      userId: 1,
+    }
+
+    mockReviewService.findUserIdByReviewId.mockResolvedValue(mockReturn2);
+    mockReviewService.deleteReview.mockResolvedValue(mockReturn);
+
+    await reviewController.deleteReview(mockRequest, mockResponse, mockNext);
+    expect(mockReviewService.findUserIdByReviewId).toHaveBeenCalledTimes(1);
+    expect(mockReviewService.deleteReview).toHaveBeenCalledTimes(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(201);
+    expect(mockResponse.json).toHaveBeenCalledWith({ success: true, message: '리뷰를 삭제하였습니다.' });
   })
 })
