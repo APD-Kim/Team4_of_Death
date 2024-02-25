@@ -16,4 +16,11 @@ router.get('/', trainerController.findAllTrainer);
 router.get('/:trainerId', trainerController.findOneTrainer);
 router.post('/:trainerId/likes', authJwt, trainerController.likesTrainer);
 
+/**카테고리별 펫시터 조회 */
+router.get('/category/:category', trainerController.findTrainerByCategory);
+
+router.put('/:trainerId', trainerController.updateTrainer);
+router.delete('/:trainerId', trainerController.deleteTrainer);
+
+
 export default router;

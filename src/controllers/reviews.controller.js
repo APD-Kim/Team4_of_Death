@@ -21,7 +21,7 @@ export class ReviewController {
         throw new CustomError(404, "리뷰 생성에 실패했습니다.")
       }
 
-      if(rating < 0 || rating > 5){
+      if(rating < 1 || rating > 5){
         throw new CustomError(400, "평점은 1~5점 입니다.")
       }
 
@@ -62,7 +62,7 @@ export class ReviewController {
         throw new CustomError(404, "수정하신 리뷰 정보가 잘못되었습니다.")
       }
 
-      if(rating < 0 || rating > 5){
+      if(rating < 1 || rating > 5){
         throw new CustomError(400, "평점은 1~5점 입니다.")
       }
 
@@ -71,9 +71,6 @@ export class ReviewController {
       if(!review) {
         throw new CustomError(404, "해당 리뷰를 찾을 수 없습니다.")
       }
-      
-      console.log("user.userId:", user.userId)
-      console.log("review.userId:", review.userId)
 
       if (user.userId !== review.userId) {
         throw new CustomError(400, '리뷰를 수정할 권한이 없습니다.')

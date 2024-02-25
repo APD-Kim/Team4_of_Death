@@ -13,7 +13,6 @@ export class TrainerRepository {
         address,
       },
     });
-
     await this.prisma.users.update({
       where: {
         userId: +userId,
@@ -46,6 +45,36 @@ export class TrainerRepository {
     return trainer;
   };
 
+  /**카테고리별 펫시터 조회 */
+  findTrainerByCategory = async (category) => {
+    const trainerList = await this.prisma.trainers.findMany({
+      where: {
+        petCategory: category,
+      },
+
+      select: {
+        userId: true,
+        career: true,
+        petCategory: true,
+        address: true,
+        createdAt: true,
+        price: true,
+        reviews: {
+          select: {
+            content: true,
+            rating: true,
+          },
+        },
+        likes: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+    return trainerList;
+  };
+
   findOneUser = async (userId) => {
     const trainer = await this.prisma.trainers.findFirst({
       where: {
@@ -57,6 +86,7 @@ export class TrainerRepository {
     });
     return trainer;
   };
+
 
   LikeTrainer = async (userId, trainerId) => {
     const trainer = await this.prisma.likes.create({
@@ -91,4 +121,28 @@ export class TrainerRepository {
     return cancelLike
   }
 
+
+  updateTrainer = async (trainerId, career, petCategory, address, price) => {
+    const trainer = await this.prisma.trainers.update({
+      where: {
+        trainerId: +trainerId,
+      },
+      data: {
+        career,
+        petCategory,
+        address,
+        price,
+      },
+    });
+    return trainer;
+  };
+
+  deleteTrainer = async (trainerId) => {
+    const trainer = await this.prisma.trainers.delete({
+      where: {
+        trainerId: +trainerId,
+      },
+    });
+    return trainer;
+  };
 }
