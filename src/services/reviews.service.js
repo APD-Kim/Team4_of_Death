@@ -12,6 +12,8 @@ export class ReviewService {
   findReviews = async (trainerId) => {
     const foundReviews = await this.reviewRepository.findReviews(trainerId); 
 
+    console.log(foundReviews); 
+
     return foundReviews.map((e)=>{
       return{
         reviewId: e.reviewId,
@@ -26,20 +28,20 @@ export class ReviewService {
   
 
   findUserIdByReviewId = async (reviewId) => {
-    const foundReview = await this.reviewRepository.findUserIdByReviewId(reviewId)
+    const foundUser = await this.reviewRepository.findUserIdByReviewId(reviewId)
 
-    return foundReview;
+    return foundUser;
   }
 
   updateReview = async (reviewId, content, rating) => {
     const updatedReview = await this.reviewRepository.updateReview(reviewId, content, rating); 
-
+    console.log(updatedReview)
     return {
       reviewId: updatedReview.reviewId,
       name: updatedReview.users.name,
       content: updatedReview.content, 
       rating: updatedReview.rating,
-      createdAt: updatedReview.createAt,
+      createdAt: updatedReview.createdAt,
       updatedAt: updatedReview.updatedAt,
     };
   }
