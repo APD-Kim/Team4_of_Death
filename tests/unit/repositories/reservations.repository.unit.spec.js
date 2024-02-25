@@ -43,4 +43,21 @@ describe('Reservation Repository Unit Test', () => {
       },
     });
   });
+
+  test('fincReservationByIdUnique Method Success', async () => {
+    const mockReturn = 'reservationId Return string'; 
+    const findReservationId = {
+      reservationId: 1,
+    };
+    mockPrisma.reservations.findUnique.mockReturnValue(mockReturn);
+    const findData = await reservationRepository.findReservationByIdUnique(findReservationId.reservationId);
+    expect(findData).toEqual(mockReturn);
+    expect(mockPrisma.reservations.findUnique).toHaveBeenCalledTimes(1);
+    expect(mockPrisma.reservations.findUnique).toHaveBeenCalledWith({
+      where: {
+        reservationId:findReservationId.reservationId,
+      }
+    })
+  }) 
+  
 });
