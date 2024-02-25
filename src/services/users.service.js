@@ -1,7 +1,7 @@
 import CustomError from "../utils/errorHandler.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { redisCli } from "../model/redis.js"
+
 
 export class UserService {
   constructor(userRepository) {
@@ -58,11 +58,12 @@ export class UserService {
       { expiresIn: '7d' })
     const bearerToken = `Bearer ${token}`
     const bearerRefreshToken = `Bearer ${refreshToken}`
-    await redisCli.set(`refreshToken:${userId}`, refreshToken, { EX: 3600 * 24 * 7 })
+    const saveRefreshToken = await this.userRepository.saveToken(bearerRefreshToken, userId)
+
 
     return {
       bearerToken,
-      bearerRefreshToken
+      saveRefreshToken
     }
 
   }

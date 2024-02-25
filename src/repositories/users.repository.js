@@ -1,6 +1,7 @@
 export class UserRepository {
-  constructor(prisma) {
+  constructor(prisma, redis) {
     this.prisma = prisma;
+    this.redis = redis
   }
   findUserByEmail = async (email) => {
     const findUser = await this.prisma.users.findFirst({
@@ -29,5 +30,9 @@ export class UserRepository {
       }
     })
     return result
+  }
+  saveToken = async (refreshToken, userId) => {
+    const savedToken = await this.redis.set(`refreshToken:${userId}`, refreshToken, { EX: 3600 * 24 * 7 })
+    return savedToken
   }
 }
