@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 9ca91d61f130d9c550f82447d0a337674bbc9b55
 import express from "express";
 import cookieParser from "cookie-parser";
 import { redisClient } from "./model/redis.js";
@@ -19,12 +14,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-<<<<<<< HEAD
 
-app.use('/users', userRouter)
-=======
 app.use('/users', userRouter);
->>>>>>> 9ca91d61f130d9c550f82447d0a337674bbc9b55
 app.use('/reviews', reviewRouter)
 app.use('/trainers', trainersRouter);
 app.use('/reservations', reservationRouter);

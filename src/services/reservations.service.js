@@ -7,7 +7,7 @@ export class ReservationService {
   }
 
   findPossibleDates = async (trainerId) => {
-    try {
+
       const PossibleDates = await this.reservationRepository.findPossibleDates(trainerId);
 
       return PossibleDates.map((reservation) => ({
@@ -16,9 +16,7 @@ export class ReservationService {
         endDate: reservation.endDate,
         petCategory: reservation.trainers.petCategory,
       }));
-    } catch (err) {
-      throw new CustomError(500, '예약 가능한 날짜 조회 중 오류가 발생했습니다.')
-    }
+
   };
   
   findReservationById = async(reservationId) => {
