@@ -12,6 +12,7 @@ export class ReviewRepository {
         rating,
       }
     })
+    console.log(review); 
 
     return review
   }
@@ -33,7 +34,7 @@ export class ReviewRepository {
   }
 
   findUserIdByReviewId = async (reviewId) => {
-    const review = await this.prisma.reviews.findUnique({
+    const user = await this.prisma.reviews.findUnique({
       where: {
         reviewId: +reviewId
       },
@@ -42,7 +43,7 @@ export class ReviewRepository {
       } 
     }) 
 
-    return review
+    return user
   }
 
 
