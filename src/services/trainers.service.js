@@ -18,7 +18,6 @@ export class TrainerService {
     if (!career || !petCategory || !address) {
       throw new CustomError(400, '트레이너 등록을 위한 필수 정보가 누락되었습니다.');
     }
-
     const trainers = await this.trainerRepository.registerTrainer(userId, price, career, petCategory, address);
     return trainers;
   };
@@ -36,6 +35,25 @@ export class TrainerService {
     if (!trainer) {
       throw new CustomError(400, '트레이너가 존재하지 않습니다.');
     }
+    return trainer;
+  };
+  
+  /**카테고리별 펫시터 조회 */
+  findTrainerByCategory = async (category) => {
+    const trainerList = await this.trainerRepository.findTrainerByCategory(category);
+    if (!trainerList) {
+      throw new CustomError(400, '해당 카테고리내 트레이너가 존재하지 않습니다.');
+    }
+    return trainerList;
+  };
+  
+  updateTrainer = async (trainerId, career, petCategory, address, price) => {
+    const trainer = await this.trainerRepository.updateTrainer(trainerId, career, petCategory, address, price);
+    return trainer;
+  };
+
+  deleteTrainer = async (trainerId) => {
+    const trainer = await this.trainerRepository.deleteTrainer(trainerId);
     return trainer;
   };
 }
