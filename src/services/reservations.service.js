@@ -17,8 +17,7 @@ export class ReservationService {
         petCategory: reservation.trainers.petCategory,
       }));
     } catch (err) {
-      console.error('예약 가능한 날짜 조회 오류');
-      next(err);
+      throw new CustomError(500, '예약 가능한 날짜 조회 중 오류가 발생했습니다.')
     }
   };
   

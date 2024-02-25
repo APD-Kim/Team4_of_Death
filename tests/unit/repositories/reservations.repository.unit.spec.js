@@ -1,7 +1,7 @@
 import { expect, jest } from '@jest/globals';
 import { ReservationRepository } from '../../../src/repositories/reservations.repository.js';
 
-let mockPrisma = {
+const mockPrisma = {
   reservations: {
     findMany: jest.fn(),
     findFirst: jest.fn(),
