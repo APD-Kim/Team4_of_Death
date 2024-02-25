@@ -3,18 +3,6 @@ export class ReviewService {
     this.reviewRepository = reviewRepository;
   }
 
-  // findTrainer = async (trainerId) => {
-  //   const foundTrainer = await this.reviewRepository.findTrainer(trainerId);
-
-  //   return foundTrainer; 
-  // }
-
-  // findUser = async (userId) => {
-  //   const foundUser = await this.reviewRepository.findUser(userId);
-
-  //   return foundUser; 
-  // }
-
   createReview = async (trainerId, userId, content, rating) => {
     const createdReview = await this.reviewRepository.createReview(trainerId, userId, content, rating);
 
