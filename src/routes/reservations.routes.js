@@ -12,5 +12,6 @@ const reservationController = new ReservationController(reservationService);
 
 router.get('/', reservationController.getDates);
 router.put('/:reservationId', reservationController.putReservation);
+router.delete('/:reservationId', reservationController.delReservation);
 
 export default router;

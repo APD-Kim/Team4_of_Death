@@ -4,13 +4,22 @@ export class ReservationRepository {
   }
 
   findReservationById = async (reservationId) => {
-    const findReservation = await this.prisma.reservations.findFirst({
+    const findReservations = await this.prisma.reservations.findFirst({
       where: {
         reservationId: +reservationId,
       },
     });
-    return findReservation;
+    return findReservations;
   };
+
+  findReservationByIdUnique = async(reservationId) => {
+    const findReservations = await this.prisma.reservations.findUnique({
+      where: {
+        reservationId: +reservationId,
+      }
+    })
+    return findReservations;
+  }
 
   // 트래이너의 가능한 날짜 찾기
   findPossibleDates = async (trainerId) => {
@@ -39,8 +48,8 @@ export class ReservationRepository {
     return PossibleDates;
   };
 
-  findReservationUnique = async (reservationId, startDate, endDate) => {
-    const updateReservation = await this.prisma.reservations.findUnique({
+  updateReservation = async (reservationId, startDate, endDate) => {
+    const updateReservations = await this.prisma.reservations.update({
       where: {
         reservationId: +reservationId,
       },
@@ -49,6 +58,16 @@ export class ReservationRepository {
         endDate,
       },
     });
-    return updateReservation;
+    return updateReservations;
   };
+  
+  deleteReservation = async(reservationId) => {
+    const delReservations = await this.prisma.reservations.delete({
+      where: {
+        reservationId: +reservationId,
+      }
+    })
+    return delReservations;
+  }
+
 }

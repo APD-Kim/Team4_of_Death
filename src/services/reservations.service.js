@@ -33,12 +33,12 @@ export class ReservationService {
     startDate,
     endDate,
   ) => {
-    const findReservation = await this.reservationRepository.findReservationById(reservationId);
+    const findReservation = await this.reservationRepository.findReservationByIdUnique(reservationId);
     if (userId !== findReservation.userId){
       throw new CustomError(404, '해당 예약에 권한이 없습니다.');
     }
   
-    const updateReservations = await this.reservationRepository.findReservationUnique(
+    const updateReservations = await this.reservationRepository.update(
       reservationId,
       startDate,
       endDate,
