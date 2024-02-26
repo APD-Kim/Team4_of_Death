@@ -92,7 +92,7 @@ describe('Reservation Repository Unit Test', () => {
     expect(mockPrisma.reservations.delete).toHaveBeenCalledWith({
       where: {
         reservationId: +reservationId,
-      }
+      },
     });
   });
 });
