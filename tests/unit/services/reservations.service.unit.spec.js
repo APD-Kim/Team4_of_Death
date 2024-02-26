@@ -11,12 +11,17 @@ const mockReservationRepository = {
   update: jest.fn(),
   deleteReservation: jest.fn(),
 };
+const mockRes = {
+  status: jest.fn().mockReturnThis(),
+  json: jest.fn().mockReturnThis(),
+};
 
 const reservationService = new ReservationService(mockReservationRepository);
 
 describe('Reservation Service Unit Test', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+    mockRes.status.mockReturnValue(mockRes);
   });
 
   test('findPossibleDates Method Success', async () => {
@@ -91,16 +96,16 @@ describe('Reservation Service Unit Test', () => {
     // 가짜 비동기 만들기 그럼 여기엔 가짜로 만든 등록값이 저장되는거고
     mockReservationRepository.update.mockResolvedValue(mockUpdateReservaion);
   
-    const compareData = await reservationService.updateReservation({
-      userId: 1,
-      reservationId: 1,
-      startDate: '2024-02-26',
-      endDate: '2024-02-27',
-    })
-    expect(reservationService.updateReservation).toHaveBeenCalledTimes(1);
+    const compareData = await reservationService.updateReservation(
+      1,
+      1,
+      '2024-02-26',
+      '2024-02-27',
+    )
+    expect(mockReservationRepository.findReservationByIdUnique).toHaveBeenCalledTimes(1);
+    expect(mockReservationRepository.update).toHaveBeenCalledTimes(1);
     expect(compareData).toEqual(mockUpdateReservaion);
     // 업데이트를 등록 했을때 반환되는 값이 일치하는지를 확인하는건가??????????????
-
   })
 
   test('Delete Reservation Unit Test', async () => {
