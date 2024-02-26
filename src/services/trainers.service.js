@@ -32,7 +32,7 @@ export class TrainerService {
   findOneTrainer = async (trainerId) => {
     const trainer = await this.trainerRepository.findOneTrainer(trainerId);
     if (!trainer) {
-      throw new CustomError(400, '트레이너가 존재하지 않습니다.');
+      throw new CustomError(404, '트레이너가 존재하지 않습니다.');
     }
     return trainer;
   };

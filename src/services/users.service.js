@@ -19,13 +19,15 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(password, 10)
     const createdUser = await this.userRepository.signUpWithEmail(email, hashedPassword, name, phoneNumber, petCategory);
     return {
-      userId: createdUser.userId,
-      name: createdUser.name,
-      email: createdUser.email,
-      phoneNumber: createdUser.phoneNumber,
-      role: createdUser.role,
-      isTrainer: createdUser.isTrainer,
-      petCategory: createdUser.petCategory
+      userId: createdUser.createdUser.userId,
+      name: createdUser.createdUser.name,
+      email: createdUser.createdUser.email,
+      phoneNumber: createdUser.createdUser.phoneNumber,
+      role: createdUser.createdUser.role,
+      isTrainer: createdUser.createdUser.isTrainer,
+      petCategory: createdUser.createdUser.petCategory,
+      pointId: createdUser.point.pointId,
+      point: createdUser.point.point
     }
   }
   validatePhoneNumber = async (phoneNumber) => {

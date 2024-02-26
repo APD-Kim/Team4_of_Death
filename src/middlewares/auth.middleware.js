@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken"
 import CustomError from "../utils/errorHandler.js"
+import { prisma } from "../utils/prisma.js";
 
 export const authJwt = async (req, res, next) => {
   try {

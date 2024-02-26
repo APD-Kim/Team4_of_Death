@@ -1,5 +1,5 @@
 
-import CustomError from "../utils/errorHandler";
+import CustomError from "../utils/errorHandler.js";
 export class ReservationController {
   constructor(reservationService, trainerService) {
     this.reservationService = reservationService;
@@ -7,11 +7,16 @@ export class ReservationController {
   }
   reserveTrainer = async (req, res, next) => {
     //트레이너를 예약하려면 예약이 되어있는 기간에는 예약을 하면 안됨
-    const { userId } = req.user;
-    const { trainerId, startDate, endDate } = req.body;
-    const findTrainer = await this.trainerService.findOneTrainer(trainerId);
-    if (!findTrainer) throw new CustomError(404, "해당 트레이너를 찾을 수 없습니다.")
-    //트레이너가 있다면
+    try {
+      const { userId } = req.user;
+      let { trainerId, startDate, endDate } = req.body;
+
+
+      const reservedData = await this.reservationService.reserveDate(userId, trainerId, startDate, endDate)
+      res.status(201).json({ message: "성공적으로 예약이 완료되었습니다.", data: reservedData })
+    } catch (err) {
+      next(err)
+    }
 
 
   }
