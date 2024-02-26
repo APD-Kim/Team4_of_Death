@@ -25,9 +25,6 @@ describe('Trainer Repository Unit Test', () => {
     const trainerList = await trainerRepository.findTrainerByCategory(findParams.petCategory);
     expect(trainerList).toEqual(mockReturn);
     expect(mockPrisma.trainers.findMany).toHaveBeenCalledTimes(1);
-    // expect(mockPrisma.trainers.findMany).toHaveBeenCalledWith({
-    //   where: { petCategory: findParams.petCategory },
-    // });
     expect(trainerList).toBe(mockReturn);
   });
 });
