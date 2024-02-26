@@ -2,17 +2,20 @@ export class ReservationRepository {
   constructor(prisma) {
     this.prisma = prisma;
   }
+  //1. 예약하기
+  //2. 계산된 값만큼 포인트 차감하기,
+  //3. 계산된 포인트에 대한 내역 생성
   reserveDate = async (userId, trainerId, startDate, endDate) => {
     const reserve = await this.prisma.reservations.create({
       data: {
         userId: Number(userId),
         trainerId: Number(trainerId),
         startDate: new Date(startDate),
-        endDate: new Date(endDate)
-      }
-    })
-    return reserve
-  }
+        endDate: new Date(endDate),
+      },
+    });
+    return reserve;
+  };
 
   searchDates = async (trainerId, startDate, endDate) => {
     const findDates = await this.prisma.reservations.findMany({
@@ -21,7 +24,7 @@ export class ReservationRepository {
         AND: [
           {
             startDate: {
-              lte: new Date(endDate)
+              lte: new Date(endDate),
             },
           },
           {
@@ -33,7 +36,7 @@ export class ReservationRepository {
       },
     });
     return findDates;
-  }
+  };
 
   findReservationById = async (reservationId) => {
     const findReservations = await this.prisma.reservations.findFirst({
@@ -48,10 +51,10 @@ export class ReservationRepository {
     const findReservations = await this.prisma.reservations.findUnique({
       where: {
         reservationId: +reservationId,
-      }
-    })
+      },
+    });
     return findReservations;
-  }
+  };
 
   // 트래이너의 가능한 날짜 찾기
   findPossibleDates = async (trainerId) => {
@@ -97,9 +100,8 @@ export class ReservationRepository {
     const delReservations = await this.prisma.reservations.delete({
       where: {
         reservationId: +reservationId,
-      }
-    })
+      },
+    });
     return delReservations;
-  }
-
+  };
 }

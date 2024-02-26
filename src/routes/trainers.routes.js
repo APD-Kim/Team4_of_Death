@@ -2,7 +2,7 @@ import express from 'express';
 import { TrainerController } from '../controllers/trainers.controller.js';
 import { TrainerService } from '../services/trainers.service.js';
 import { TrainerRepository } from '../repositories/trainers.repository.js';
-import { authJwt } from "../middlewares/auth.middleware.js";
+import { authJwt } from '../middlewares/auth.middleware.js';
 
 import { prisma } from '../utils/prisma.js';
 const trainerRepository = new TrainerRepository(prisma);
@@ -21,6 +21,5 @@ router.get('/category/:category', trainerController.findTrainerByCategory);
 
 router.put('/:trainerId', trainerController.updateTrainer);
 router.delete('/:trainerId', trainerController.deleteTrainer);
-
 
 export default router;

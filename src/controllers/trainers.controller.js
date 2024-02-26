@@ -1,4 +1,4 @@
-import CustomError from "../utils/errorHandler.js";
+import CustomError from '../utils/errorHandler.js';
 
 export class TrainerController {
   constructor(trainerService) {
@@ -45,18 +45,17 @@ export class TrainerController {
   likesTrainer = async (req, res, next) => {
     const { userId } = req.user;
     const { trainerId } = req.params;
-    const findTrainer = await this.trainerService.findOneTrainer(trainerId)
+    const findTrainer = await this.trainerService.findOneTrainer(trainerId);
     console.log(findTrainer);
     if (userId === findTrainer.userId) {
-      throw new CustomError(400, "자기 자신에게 좋아요를 누를 수 없습니다.")
+      throw new CustomError(400, '자기 자신에게 좋아요를 누를 수 없습니다.');
     }
-    const likeTrainer = await this.trainerService.LikeTrainer(userId, trainerId)
-    if (likeTrainer.status === "cancelLiked") {
-      return res.status(201).json({ message: "성공적으로 좋아요를 취소했습니다." })
+    const likeTrainer = await this.trainerService.LikeTrainer(userId, trainerId);
+    if (likeTrainer.status === 'cancelLiked') {
+      return res.status(201).json({ message: '성공적으로 좋아요를 취소했습니다.' });
     }
-    res.status(201).json({ message: "성공적으로 좋아요를 눌렀습니다." })
-  }
-
+    res.status(201).json({ message: '성공적으로 좋아요를 눌렀습니다.' });
+  };
 
   /**카테고리별 펫시터 조회 */
   findTrainerByCategory = async (req, res, next) => {
@@ -105,12 +104,8 @@ export class TrainerController {
 
       await this.trainerService.deleteTrainer(trainerId);
       return res.status(200).json({ message: '정상적으로 삭제되었습니다.' });
-
     } catch (err) {
       next(err);
     }
   };
-
 }
-
-
