@@ -13,11 +13,23 @@ export class TrainerRepository {
         address,
       },
     });
+    await this.prisma.users.update({
+      where: {
+        userId: +userId,
+      },
+      data: {
+        isTrainer: true,
+      },
+    });
     return trainer;
   };
 
   findAllTrainer = async () => {
-    const trainer = await this.prisma.trainers.findMany();
+    const trainer = await this.prisma.trainers.findMany({
+      include: {
+        users: true,
+      },
+    });
     return trainer;
   };
 
@@ -61,5 +73,74 @@ export class TrainerRepository {
       },
     });
     return trainerList;
+  };
+
+  findOneUser = async (userId) => {
+    const trainer = await this.prisma.trainers.findFirst({
+      where: {
+        userId: +userId,
+      },
+      include: {
+        users: true,
+      },
+    });
+    return trainer;
+  };
+
+  LikeTrainer = async (userId, trainerId) => {
+    const trainer = await this.prisma.likes.create({
+      data: {
+        userId: Number(userId),
+        trainerId: Number(trainerId),
+      },
+    });
+    console.log(trainer);
+    return trainer;
+  };
+
+  existLike = async (userId, trainerId) => {
+    const trainer = await this.prisma.likes.findFirst({
+      where: {
+        userId: +userId,
+        trainerId: +trainerId,
+      },
+    });
+    return trainer;
+  };
+
+  cancelLikeTrainer = async (userId, trainerId) => {
+    const cancelLike = await this.prisma.likes.delete({
+      where: {
+        userId_trainerId: {
+          userId: +userId,
+          trainerId: +trainerId,
+        },
+      },
+    });
+    return cancelLike;
+  };
+
+  updateTrainer = async (trainerId, career, petCategory, address, price) => {
+    const trainer = await this.prisma.trainers.update({
+      where: {
+        trainerId: +trainerId,
+      },
+      data: {
+        career,
+        petCategory,
+        address,
+        price,
+      },
+    });
+    return trainer;
+  };
+
+  deleteTrainer = async (trainerId) => {
+    const trainer = await this.prisma.trainers.delete({
+      where: {
+        trainerId: +trainerId,
+      },
+    });
+    return trainer;
   };
 }

@@ -1,16 +1,11 @@
 import CustomError from "../utils/errorHandler.js";
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+
 
 export class UserService {
   constructor(userRepository) {
     this.userRepository = userRepository;
-  }
-  findUserByEmail = async (email, needError) => {
-    const user = await this.userRepository.findUserByEmail(email);
-    //회원가입할땐 해당 이메일로 생성된 유저가 없어야함
-    if (!user && needError === true) throw new CustomError(404, "해당 유저를 찾을 수 없습니다.")
-
-    return user ? user : null
   }
   signUp = async (email, password, name, phoneNumber, petCategory) => {
     const user = await this.userRepository.findUserByEmail(email);
@@ -22,15 +17,17 @@ export class UserService {
       throw new CustomError(409, "이미 가입된 전화번호입니다.")
     }
     const hashedPassword = await bcrypt.hash(password, 10)
-    const createdUser = await this.userRepository.signUpWithEmail(email, hashedPassword, name, phoneNumber, petCategory)
+    const createdUser = await this.userRepository.signUpWithEmail(email, hashedPassword, name, phoneNumber, petCategory);
     return {
-      userId: createdUser.userId,
-      name: createdUser.name,
-      email: createdUser.email,
-      phoneNumber: createdUser.phoneNumber,
-      role: createdUser.role,
-      isTrainer: createdUser.isTrainer,
-      petCategory: createdUser.petCategory
+      userId: createdUser.createdUser.userId,
+      name: createdUser.createdUser.name,
+      email: createdUser.createdUser.email,
+      phoneNumber: createdUser.createdUser.phoneNumber,
+      role: createdUser.createdUser.role,
+      isTrainer: createdUser.createdUser.isTrainer,
+      petCategory: createdUser.createdUser.petCategory,
+      pointId: createdUser.point.pointId,
+      point: createdUser.point.point
     }
   }
   validatePhoneNumber = async (phoneNumber) => {
@@ -50,4 +47,27 @@ export class UserService {
     }
     return user;
   }
+
+
+  signToken = async (userId) => {
+    const token = jwt.sign(
+      { userId: userId },
+      process.env.SECRET_KEY,
+      { expiresIn: '1h' })
+    const refreshToken = jwt.sign(
+      { userId: userId },
+      process.env.SECRET_KEY,
+      { expiresIn: '7d' })
+    const bearerToken = `Bearer ${token}`
+    const bearerRefreshToken = `Bearer ${refreshToken}`
+    const saveRefreshToken = await this.userRepository.saveToken(bearerRefreshToken, userId)
+
+
+    return {
+      bearerToken,
+      saveRefreshToken
+    }
+
+  }
 }
+

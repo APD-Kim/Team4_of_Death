@@ -20,9 +20,32 @@ model Users {
   updatedAt    DateTime       @updatedAt
   isTrainer    Boolean        @default(false)
   likes        Likes[]
+  Points       Points?
   reservations Reservations[]
   reviews      Reviews[]
   trainers     Trainers?
+  points       Points?
+}
+
+model Points {
+  pointId   String   @id @default(dbgenerated())
+  userId    Int      @unique
+  point     Int
+  updatedAt DateTime @updatedAt
+
+  pointHistory PointHistory[]
+  users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model PointHistory {
+  historyId    String      @id @default(dbgenerated())
+  pointId      String
+  point        Int //<- 사용된 후 포인트 110000
+  pointChanged Int //<- 얼마가 add/sub됐는지 보여주는 포인트 -40000
+  status       PointStatus // <- 충전 예약 환불
+  createdAt    DateTime    @default(now())
+
+  points Points @relation(fields: [pointId], references: [pointId])
 }
 
 model Trainers {
@@ -82,8 +105,37 @@ model Likes {
   @@index([trainerId], map: "Likes_trainerId_fkey")
 }
 
+model PointHistory {
+  historyId    String              @id
+  pointId      String
+  point        Int
+  pointChanged String
+  status       PointHistory_status
+  createdAt    DateTime            @default(now())
+  Points       Points              @relation(fields: [pointId], references: [pointId])
+
+  @@index([pointId], map: "PointHistory_pointId_fkey")
+}
+
+model Points {
+  pointId      String         @id
+  userId       Int            @unique
+  point        Int
+  updatedAt    DateTime
+  PointHistory PointHistory[]
+  Users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
 enum ReserveStatus {
   STANDBY
   ACCEPT
+  CANCEL
+}
+
+
+enum PointStatus {
+  FILL //충전
+  RESERVE //예약
+  REFUND //환불
   CANCEL
 }
