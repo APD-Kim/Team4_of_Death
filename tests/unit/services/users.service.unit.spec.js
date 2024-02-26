@@ -2,6 +2,8 @@ import { UserService } from '../../../src/services/users.service';
 import { beforeEach, describe, expect, jest } from '@jest/globals';
 import CustomError from '../../../src/utils/errorHandler';
 
+import bcrypt from 'bcrypt';
+
 const mockUserRepository = {
   findUserByEmail: jest.fn(),
   findUserByPhoneNumber: jest.fn(),
@@ -22,6 +24,7 @@ describe('User Service Unit Test', () => {
   it('signUp method by Success', async () => {
     const mockReturn = null;
     const mockReturnValue = {
+
       email: 'popcon9406201431@gmail.com',
       password: '123456',
       name: '김라임',
@@ -36,6 +39,39 @@ describe('User Service Unit Test', () => {
       phoneNumber: '010-4331-1620',
       petCategory: 'cat',
       role: 'user',
+
+      name: '김라임',
+      email: 'popcon94062646@gmail.com',
+      phoneNumber: '010-4331-1330',
+      petCategory: 'cat',
+      password: '060202',
+    };
+    const returnValue = {
+      createdUser: {
+        userId: '1',
+        email: 'popcon9406201431@gmail.com',
+        isTrainer: false,
+        name: '김라임',
+        phoneNumber: '010-4331-1620',
+        petCategory: 'cat',
+        role: 'user',
+      },
+      point: {
+        pointId: 2,
+        point: 300,
+      },
+    };
+    const createdUserData = {
+      userId: '1',
+      name: '김라임',
+      email: 'popcon9406201431@gmail.com',
+      phoneNumber: '010-4331-1620',
+      role: 'user',
+      isTrainer: false,
+      petCategory: 'cat',
+      pointId: 2,
+      point: 300,
+
     };
     const hashed = '1234566';
     mockUserRepository.findUserByEmail.mockResolvedValue(mockReturn);
@@ -49,7 +85,11 @@ describe('User Service Unit Test', () => {
       mockReturnValue.phoneNumber,
       mockReturnValue.petCategory
     );
+
     expect(createdUser).toEqual(returnValue);
+
+    expect(createdUser).toEqual(createdUserData);
+    
     expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
     expect(mockUserRepository.findUserByPhoneNumber).toHaveBeenCalledTimes(1);
     expect(mockUserRepository.signUpWithEmail).toHaveBeenCalledTimes(1);

@@ -6,12 +6,12 @@ export class PointService {
     this.userRepository = userRepository;
   }
 
-  caculateUserPoint = async (userId, point, status, adjustment) => {
+  calculateUserPoint = async (userId, point, status, adjustment) => {
     const findUser = await this.userRepository.findUserByUserId(userId);
     if (!findUser) {
       throw new CustomError(404, '해당 유저를 찾을 수 없습니다.');
     }
-    const result = await this.pointRepository.caculatePoint(userId, point, status, adjustment);
+    const result = await this.pointRepository.calculatePoint(userId, point, status, adjustment);
     return result;
   };
   showUserPoint = async (userId) => {

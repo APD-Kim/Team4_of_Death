@@ -4,9 +4,9 @@ export class PointRepository {
     this.prisma = prisma;
   }
   //포인트 충전, 환불, 차감 다됨
-  caculatePoint = async (userId, point, status, adjustment) => {
+  calculatePoint = async (userId, point, status, adjustment) => {
     const result = await this.prisma.$transaction(async () => {
-      const updatedResultPoint = await this._caculatePoint(userId, point, adjustment);
+      const updatedResultPoint = await this._calculatePoint(userId, point, adjustment);
       const createdHistory = await this._addHistory(
         point,
         status,
@@ -40,7 +40,7 @@ export class PointRepository {
     });
     return search;
   };
-  _caculatePoint = async (userId, point, adjustment) => {
+  _calculatePoint = async (userId, point, adjustment) => {
     let updatedResultPoint;
     if (adjustment === 'increment') {
       updatedResultPoint = await this.prisma.points.update({

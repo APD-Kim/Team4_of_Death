@@ -6,49 +6,46 @@ export class ReviewService {
   createReview = async (trainerId, userId, content, rating) => {
     const createdReview = await this.reviewRepository.createReview(trainerId, userId, content, rating);
 
-    return createdReview; 
-  }
+    return createdReview;
+  };
 
   findReviews = async (trainerId) => {
-    const foundReviews = await this.reviewRepository.findReviews(trainerId); 
+    const foundReviews = await this.reviewRepository.findReviews(trainerId);
 
-    console.log(foundReviews); 
-
-    return foundReviews.map((e)=>{
-      return{
+    return foundReviews.map((e) => {
+      return {
         reviewId: e.reviewId,
         name: e.users.name,
         rating: e.rating,
         content: e.content,
         createdAt: e.createdAt,
         updatedAt: e.updatedAt,
-      }
-    })
-  }; 
-  
+      };
+    });
+  };
 
   findUserIdByReviewId = async (reviewId) => {
-    const foundUser = await this.reviewRepository.findUserIdByReviewId(reviewId)
+    const foundReview = await this.reviewRepository.findUserIdByReviewId(reviewId);
 
-    return foundUser;
-  }
+    return foundReview;
+  };
 
   updateReview = async (reviewId, content, rating) => {
-    const updatedReview = await this.reviewRepository.updateReview(reviewId, content, rating); 
-    console.log(updatedReview)
+    const updatedReview = await this.reviewRepository.updateReview(reviewId, content, rating);
+
     return {
       reviewId: updatedReview.reviewId,
       name: updatedReview.users.name,
-      content: updatedReview.content, 
+      content: updatedReview.content,
       rating: updatedReview.rating,
       createdAt: updatedReview.createdAt,
       updatedAt: updatedReview.updatedAt,
     };
-  }
+  };
 
   deleteReview = async (reviewId) => {
     const deletedReview = await this.reviewRepository.deleteReview(reviewId);
 
-    return deletedReview; 
-  }
+    return deletedReview;
+  };
 }
