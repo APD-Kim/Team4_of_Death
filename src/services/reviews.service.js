@@ -38,7 +38,7 @@ export class ReviewService {
       name: updatedReview.users.name,
       content: updatedReview.content,
       rating: updatedReview.rating,
-      createdAt: updatedReview.createAt,
+      createdAt: updatedReview.createdAt,
       updatedAt: updatedReview.updatedAt,
     };
   };

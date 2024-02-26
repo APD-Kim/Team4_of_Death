@@ -20,6 +20,7 @@ model Users {
   updatedAt    DateTime       @updatedAt
   isTrainer    Boolean        @default(false)
   likes        Likes[]
+  Points       Points?
   reservations Reservations[]
   reviews      Reviews[]
   trainers     Trainers?
@@ -104,11 +105,33 @@ model Likes {
   @@index([trainerId], map: "Likes_trainerId_fkey")
 }
 
+model PointHistory {
+  historyId    String              @id
+  pointId      String
+  point        Int
+  pointChanged String
+  status       PointHistory_status
+  createdAt    DateTime            @default(now())
+  Points       Points              @relation(fields: [pointId], references: [pointId])
+
+  @@index([pointId], map: "PointHistory_pointId_fkey")
+}
+
+model Points {
+  pointId      String         @id
+  userId       Int            @unique
+  point        Int
+  updatedAt    DateTime
+  PointHistory PointHistory[]
+  Users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
 enum ReserveStatus {
   STANDBY
   ACCEPT
   CANCEL
 }
+
 
 enum PointStatus {
   FILL //충전

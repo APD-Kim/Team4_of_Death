@@ -4,8 +4,11 @@ import { UserRepository } from '../../../src/repositories/users.repository';
 const mockPrisma = {
   $transaction: jest.fn(),
   users: {
-    findFirst: jest.fn(),
     create: jest.fn(),
+    findMany: jest.fn(),
+    findFirst: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
   },
   points: {
     create: jest.fn(),
