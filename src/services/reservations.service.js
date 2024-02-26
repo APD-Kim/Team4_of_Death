@@ -43,7 +43,7 @@ export class ReservationService {
   };
 
   findPossibleDates = async (trainerId) => {
-    try {
+
       const PossibleDates = await this.reservationRepository.findPossibleDates(trainerId);
 
       return PossibleDates.map((reservation) => ({
@@ -52,10 +52,7 @@ export class ReservationService {
         endDate: reservation.endDate,
         petCategory: reservation.trainers.petCategory,
       }));
-    } catch (err) {
-      console.error('예약 가능한 날짜 조회 오류');
-      next(err);
-    }
+
   };
 
   findReservationById = async (reservationId) => {
