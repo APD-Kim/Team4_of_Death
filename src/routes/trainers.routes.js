@@ -20,5 +20,8 @@ router.get('/category/:category', trainerController.findTrainerByCategory);
 router.put('/:trainerId', trainerController.updateTrainer);
 router.delete('/:trainerId', trainerController.deleteTrainer);
 
+//펫시터 조회(예약 없는)
+router.get('reservations/:date-time', trainerController.findTrainerByDateTime); 
+
 
 export default router;

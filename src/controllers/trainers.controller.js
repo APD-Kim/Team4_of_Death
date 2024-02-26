@@ -57,9 +57,9 @@ export class TrainerController {
       const trainerList = await this.trainerService.findTrainerByCategory(category);
 
       return res.status(200).json({ message: '카테고리별 펫시터 조회 완료', data: trainerList });
-       } catch (err) {
+      } catch (err) {
       next(err);
-       }
+      }
     };
       
   updateTrainer = async (req, res, next) => {
@@ -93,4 +93,15 @@ export class TrainerController {
       next(err);
     }
   };
+
+  findTrainerByDateTime = async(req, res, next) => {
+    try{ 
+      const date = req.body; 
+
+      const noAnyPlanesTrainer = await this.trainerService.findTrainerByDateTime(date); 
+      return res.status(200).json({data: noAnyPlanesTrainer})
+    } catch (err) {
+      next(err);
+    }
+  }
 }

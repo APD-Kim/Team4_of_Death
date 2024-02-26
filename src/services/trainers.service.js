@@ -56,4 +56,10 @@ export class TrainerService {
     const trainer = await this.trainerRepository.deleteTrainer(trainerId);
     return trainer;
   };
+
+  findTrainerByDateTime = async (date) => {
+    const noAnyPlanesTrainer = await this.trainerRepository.findTrainerByDateTime(date)
+
+    return noAnyPlanesTrainer;
+  }
 }
