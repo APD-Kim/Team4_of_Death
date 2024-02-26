@@ -1,10 +1,10 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import { redisClient } from "./model/redis.js";
 import userRouter from "./routes/users.routes.js";
 import reviewRouter from "./routes/reviews.routes.js";
 import reservationRouter from './routes/reservations.routes.js';
 import trainersRouter from '../src/routes/trainers.routes.js';
+import pointRouter from "../src/routes/points.routes.js"
 
 import CustomError from "./utils/errorHandler.js";
 import "dotenv/config";
@@ -19,6 +19,7 @@ app.use('/users', userRouter);
 app.use('/reviews', reviewRouter)
 app.use('/trainers', trainersRouter);
 app.use('/reservations', reservationRouter);
+app.use('/points', pointRouter)
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

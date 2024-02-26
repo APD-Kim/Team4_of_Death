@@ -20,10 +20,31 @@ model Users {
   updatedAt    DateTime       @updatedAt
   isTrainer    Boolean        @default(false)
   likes        Likes[]
-  Points       Points?
+  points       Points?
   reservations Reservations[]
   reviews      Reviews[]
   trainers     Trainers?
+}
+
+model Points {
+  pointId      String         @id
+  userId       Int            @unique
+  point        Int
+  updatedAt    DateTime       @updatedAt
+  pointHistory PointHistory[]
+  users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model PointHistory {
+  historyId    String      @id
+  pointId      String
+  point        Int
+  pointChanged Int
+  status       PointStatus
+  createdAt    DateTime    @default(now())
+  points       Points      @relation(fields: [pointId], references: [pointId])
+
+  @@index([pointId], map: "PointHistory_pointId_fkey")
 }
 
 model Trainers {
@@ -82,36 +103,15 @@ model Likes {
   @@unique([userId, trainerId])
   @@index([trainerId], map: "Likes_trainerId_fkey")
 }
-
-model Point_History {
-  historyId    Int                  @id
-  pointId      Int
-  point        Int
-  pointChanged Int
-  status       Point_History_status
-  createdAt    DateTime             @default(now())
-  Points       Points               @relation(fields: [pointId], references: [pointId])
-
-  @@index([pointId], map: "Point_History_pointId_fkey")
-}
-
-model Points {
-  pointId       Int             @id
-  userId        Int             @unique
-  point         Int
-  updatedAt     DateTime
-  Point_History Point_History[]
-  Users         Users           @relation(fields: [userId], references: [userId], onDelete: Cascade)
-}
-
 enum ReserveStatus {
   STANDBY
   ACCEPT
   CANCEL
 }
 
-enum Point_History_status {
+enum PointStatus {
   FILL
   RESERVE
   REFUND
+  CANCEL
 }
