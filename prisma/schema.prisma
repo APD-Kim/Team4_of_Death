@@ -103,6 +103,7 @@ model Likes {
   @@unique([userId, trainerId])
   @@index([trainerId], map: "Likes_trainerId_fkey")
 }
+
 enum ReserveStatus {
   STANDBY
   ACCEPT
