@@ -2,8 +2,12 @@ import { beforeEach, describe, expect, jest } from '@jest/globals';
 import { UserRepository } from '../../../src/repositories/users.repository';
 
 const mockPrisma = {
+  $transaction: jest.fn(),
   users: {
     findFirst: jest.fn(),
+    create: jest.fn(),
+  },
+  points: {
     create: jest.fn(),
   },
 };
@@ -25,8 +29,17 @@ describe('User Repository Unit Test', () => {
     expect(findUserData).toEqual(mockReturn);
     expect(mockPrisma.users.findFirst).toHaveBeenCalledTimes(1);
   });
+  it('findUserByEmail Method', async () => {
+    const mockReturn = 'userId String';
+    const findParams = {
+      email: 'findUserEmail',
+    };
+    mockPrisma.users.findFirst.mockResolvedValue(mockReturn);
+    const findUserData = await userRepository.findUserByUserId(findParams.email);
+    expect(findUserData).toEqual(mockReturn);
+    expect(mockPrisma.users.findFirst).toHaveBeenCalledTimes(1);
+  });
   it('signUpWithEmail Method', async () => {
-    const mockReturn = 'created String';
     const findParams = {
       email: 'popcon94062011@gmail.com',
       password: 'hashedPassword',
@@ -34,25 +47,20 @@ describe('User Repository Unit Test', () => {
       phoneNumber: '010-4311-1620',
       petCategory: 'cat',
     };
-    mockPrisma.users.create.mockResolvedValue(mockReturn);
-    const createdUserData = await userRepository.signUpWithEmail(
+    const mockUserCreationResult = { userId: 1, email: 'popcon94062011@gmail.com' };
+    const mockPointCreationResult = { pointId: 'some-random-id', userId: 1, point: 1000 };
+    mockPrisma.users.create.mockResolvedValue(mockUserCreationResult);
+    mockPrisma.points.create.mockResolvedValue(mockPointCreationResult);
+    mockPrisma.$transaction.mockImplementation((cb) => cb(mockPrisma));
+    const result = await userRepository.signUpWithEmail(
       findParams.email,
       findParams.password,
       findParams.name,
       findParams.phoneNumber,
       findParams.petCategory
     );
-    expect(createdUserData).toEqual(mockReturn);
-    expect(mockPrisma.users.create).toHaveBeenCalledTimes(1);
-    expect(mockPrisma.users.create).toHaveBeenCalledWith({
-      data: {
-        email: findParams.email,
-        password: findParams.password,
-        name: findParams.name,
-        phoneNumber: findParams.phoneNumber,
-        petCategory: findParams.petCategory,
-      },
-    });
+    expect(result).toEqual({ createdUser: mockUserCreationResult, point: mockPointCreationResult });
+    expect(mockPrisma.$transaction).toHaveBeenCalledTimes(1);
   });
   it('findUserByPhoneNumber Method', async () => {
     const mockReturn = 'phoneNumber String';

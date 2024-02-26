@@ -4,6 +4,7 @@ import { ReservationRepository } from '../../../src/repositories/reservations.re
 let mockPrisma = {
   reservations: {
     findMany: jest.fn(),
+    create: jest.fn(),
   },
 };
 
@@ -21,6 +22,15 @@ describe('Reservation Repository Unit Test', () => {
     const reservations = await reservationRepository.findPossibleDates(1);
 
     expect(mockPrisma.reservations.findMany).toHaveBeenCalledTimes(1);
+    expect(reservations).toBe(mockReturn);
+  });
+  test('reserveDate Method ', async () => {
+    const mockReturn = 'create Return string';
+    mockPrisma.reservations.create.mockReturnValue(mockReturn);
+
+    const reservations = await reservationRepository.reserveDate(1);
+
+    expect(mockPrisma.reservations.create).toHaveBeenCalledTimes(1);
     expect(reservations).toBe(mockReturn);
   });
 });

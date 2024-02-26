@@ -12,7 +12,7 @@ const pointsController = new PointController(pointsService);
 
 const router = express.Router();
 
-router.post('/caculate', authJwt, pointsController.cacluatePoint);
+router.post('/caculate', authJwt, pointsController.calculatePoint);
 router.get('/', authJwt, pointsController.showUserPoint);
 router.get('/history', authJwt, pointsController.showPointHistory);
 
