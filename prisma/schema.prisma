@@ -24,6 +24,28 @@ model Users {
   reservations Reservations[]
   reviews      Reviews[]
   trainers     Trainers?
+  points       Points?
+}
+
+model Points {
+  pointId   String   @id @default(dbgenerated())
+  userId    Int      @unique
+  point     Int
+  updatedAt DateTime @updatedAt
+
+  pointHistory PointHistory[]
+  users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model PointHistory {
+  historyId    String      @id @default(dbgenerated())
+  pointId      String
+  point        Int //<- 사용된 후 포인트 110000
+  pointChanged Int //<- 얼마가 add/sub됐는지 보여주는 포인트 -40000
+  status       PointStatus // <- 충전 예약 환불
+  createdAt    DateTime    @default(now())
+
+  points Points @relation(fields: [pointId], references: [pointId])
 }
 
 model Trainers {
@@ -110,9 +132,10 @@ enum ReserveStatus {
   CANCEL
 }
 
-enum PointHistory_status {
-  FILL
-  RESERVE
-  REFUND
+
+enum PointStatus {
+  FILL //충전
+  RESERVE //예약
+  REFUND //환불
   CANCEL
 }

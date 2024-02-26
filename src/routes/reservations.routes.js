@@ -3,13 +3,19 @@ import { prisma } from '../utils/prisma.js';
 import { ReservationController } from '../controllers/reservations.controller.js';
 import { ReservationService } from '../services/reservations.service.js';
 import { ReservationRepository } from '../repositories/reservations.repository.js';
+import { authJwt } from '../middlewares/auth.middleware.js';
+import { TrainerRepository } from '../repositories/trainers.repository.js';
+import { PointRepository } from '../repositories/points.repository.js';
+
+const reservationRepository = new ReservationRepository(prisma);
+const trainerRepository = new TrainerRepository(prisma);
+const pointRepository = new PointRepository(prisma);
+const reservationService = new ReservationService(reservationRepository, trainerRepository, pointRepository);
+const reservationController = new ReservationController(reservationService);
 
 const router = express.Router();
 
-const reservatinonRepository = new ReservationRepository(prisma);
-const reservationService = new ReservationService(reservatinonRepository);
-const reservationController = new ReservationController(reservationService);
-
+router.post('/', authJwt, reservationController.reserveTrainer);
 router.get('/', reservationController.getDates);
 router.put('/:reservationId', reservationController.putReservation);
 router.delete('/:reservationId', reservationController.delReservation);
