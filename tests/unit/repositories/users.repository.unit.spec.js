@@ -10,6 +10,7 @@ const mockPrisma = {
     update: jest.fn(),
     delete: jest.fn(),
   },
+
   points: {
     create: jest.fn(),
   },
