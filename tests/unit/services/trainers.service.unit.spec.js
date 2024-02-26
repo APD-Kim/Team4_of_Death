@@ -6,6 +6,8 @@ const mockTrainerRepository = {
   registerTrainer: jest.fn(),
   findAllTrainer: jest.fn(),
   findOneTrainer: jest.fn(),
+  updateTrainer: jest.fn(),
+  deleteTrainer: jest.fn(),
   findTrainerByCategory: jest.fn(),
 };
 
