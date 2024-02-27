@@ -7,21 +7,21 @@ export class ReviewController {
   postReview = async (req, res, next) => {
     try {
       const { userId } = req.user;
-      const { trainerId } = req.query;
+      const { trainerId } = req.params;
       const { content, rating } = req.body;
 
       if (!userId || !trainerId || !content || !rating) {
         throw new CustomError(404, '작성하신 리뷰 정보가 잘못 되었습니다.');
       }
 
-      const review = await this.reviewService.createReview(trainerId, userId, content, rating);
+      if (rating < 1 || rating > 5) {
+        throw new CustomError(400, '평점은 1~5점 입니다.');
+      }
+
+      const review = await this.reviewService.createReview(userId, trainerId, content, rating);
 
       if (!review) {
         throw new CustomError(404, '리뷰 생성에 실패했습니다.');
-      }
-
-      if (rating < 1 || rating > 5) {
-        throw new CustomError(400, '평점은 1~5점 입니다.');
       }
 
       return res.status(201).json({ data: review });
