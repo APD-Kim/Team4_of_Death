@@ -1,12 +1,10 @@
 generator client {
   provider = "prisma-client-js"
 }
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
-
 model Users {
   userId       Int            @id @default(autoincrement())
   name         String
@@ -20,34 +18,29 @@ model Users {
   updatedAt    DateTime       @updatedAt
   isTrainer    Boolean        @default(false)
   likes        Likes[]
-  Points       Points?
+  points       Points?
   reservations Reservations[]
   reviews      Reviews[]
   trainers     Trainers?
-  points       Points?
 }
-
 model Points {
-  pointId   String   @id @default(dbgenerated())
-  userId    Int      @unique
-  point     Int
-  updatedAt DateTime @updatedAt
-
+  pointId      String         @id
+  userId       Int            @unique
+  point        Int
+  updatedAt    DateTime       @updatedAt
   pointHistory PointHistory[]
   users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
-
 model PointHistory {
-  historyId    String      @id @default(dbgenerated())
+  historyId    String      @id
   pointId      String
-  point        Int //<- 사용된 후 포인트 110000
-  pointChanged Int //<- 얼마가 add/sub됐는지 보여주는 포인트 -40000
-  status       PointStatus // <- 충전 예약 환불
+  point        Int
+  pointChanged Int
+  status       PointStatus
   createdAt    DateTime    @default(now())
-
-  points Points @relation(fields: [pointId], references: [pointId])
+  points       Points      @relation(fields: [pointId], references: [pointId])
+  @@index([pointId], map: "PointHistory_pointId_fkey")
 }
-
 model Trainers {
   trainerId    Int            @id @default(autoincrement())
   userId       Int            @unique
@@ -62,7 +55,6 @@ model Trainers {
   reviews      Reviews[]
   users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
-
 model Reservations {
   reservationId Int           @id @default(autoincrement())
   userId        Int
@@ -74,11 +66,9 @@ model Reservations {
   status        ReserveStatus @default(STANDBY)
   trainers      Trainers      @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
   users         Users         @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
   @@index([trainerId], map: "Reservations_trainerId_fkey")
   @@index([userId], map: "Reservations_userId_fkey")
 }
-
 model Reviews {
   reviewId  Int      @id @default(autoincrement())
   userId    Int
@@ -89,53 +79,26 @@ model Reviews {
   updatedAt DateTime @updatedAt
   trainers  Trainers @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
   users     Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
   @@index([trainerId], map: "Reviews_trainerId_fkey")
   @@index([userId], map: "Reviews_userId_fkey")
 }
-
 model Likes {
   userId    Int
   trainerId Int
   createdAt DateTime @default(now())
   trainers  Trainers @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
   users     Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
   @@unique([userId, trainerId])
   @@index([trainerId], map: "Likes_trainerId_fkey")
 }
-
-model PointHistory {
-  historyId    String              @id
-  pointId      String
-  point        Int
-  pointChanged String
-  status       PointHistory_status
-  createdAt    DateTime            @default(now())
-  Points       Points              @relation(fields: [pointId], references: [pointId])
-
-  @@index([pointId], map: "PointHistory_pointId_fkey")
-}
-
-model Points {
-  pointId      String         @id
-  userId       Int            @unique
-  point        Int
-  updatedAt    DateTime
-  PointHistory PointHistory[]
-  Users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
-}
-
 enum ReserveStatus {
   STANDBY
   ACCEPT
   CANCEL
 }
-
-
 enum PointStatus {
-  FILL //충전
-  RESERVE //예약
-  REFUND //환불
+  FILL
+  RESERVE
+  REFUND
   CANCEL
 }
