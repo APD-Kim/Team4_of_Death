@@ -23,30 +23,8 @@ describe('User Service Unit Test', () => {
 
   it('signUp method by Success', async () => {
     const mockReturn = null;
+
     const mockReturnValue = {
-
-      email: 'popcon9406201431@gmail.com',
-      password: '123456',
-      name: '김라임',
-      phoneNumber: '010-4331-1620',
-      petCategory: 'cat',
-    };
-    const returnValue = {
-      userId: '1',
-      email: 'popcon9406201431@gmail.com',
-      isTrainer: false,
-      name: '김라임',
-      phoneNumber: '010-4331-1620',
-      petCategory: 'cat',
-      role: 'user',
-
-      name: '김라임',
-      email: 'popcon94062646@gmail.com',
-      phoneNumber: '010-4331-1330',
-      petCategory: 'cat',
-      password: '060202',
-    };
-    const returnValue = {
       createdUser: {
         userId: '1',
         email: 'popcon9406201431@gmail.com',
@@ -55,13 +33,15 @@ describe('User Service Unit Test', () => {
         phoneNumber: '010-4331-1620',
         petCategory: 'cat',
         role: 'user',
+        profileImg: 'http://test.com',
       },
       point: {
         pointId: 2,
         point: 300,
       },
     };
-    const createdUserData = {
+
+    const returnValue = {
       userId: '1',
       name: '김라임',
       email: 'popcon9406201431@gmail.com',
@@ -69,27 +49,35 @@ describe('User Service Unit Test', () => {
       role: 'user',
       isTrainer: false,
       petCategory: 'cat',
+      profileImg: 'http://test.com',
       pointId: 2,
       point: 300,
-
     };
+
     const hashed = '1234566';
     mockUserRepository.findUserByEmail.mockResolvedValue(mockReturn);
     mockUserRepository.findUserByPhoneNumber.mockResolvedValue(mockReturn);
     mockBcrypt.hash.mockResolvedValue(hashed);
-    mockUserRepository.signUpWithEmail.mockResolvedValue(returnValue);
+    mockUserRepository.signUpWithEmail.mockResolvedValue(mockReturnValue);
+    const body = {
+      email: 'popcon9406201431@gmail.com',
+      password: '111222',
+      name: '김라임',
+      phoneNumber: '010-4331-1620',
+      petCategory: 'cat',
+      profileImg: 'http://test.com',
+    };
     const createdUser = await userService.signUp(
-      mockReturnValue.email,
-      mockReturnValue.password,
-      mockReturnValue.name,
-      mockReturnValue.phoneNumber,
-      mockReturnValue.petCategory
+      body.email,
+      body.password,
+      body.name,
+      body.phoneNumber,
+      body.petCategory,
+      body.profileImg
     );
 
     expect(createdUser).toEqual(returnValue);
 
-    expect(createdUser).toEqual(createdUserData);
-    
     expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
     expect(mockUserRepository.findUserByPhoneNumber).toHaveBeenCalledTimes(1);
     expect(mockUserRepository.signUpWithEmail).toHaveBeenCalledTimes(1);
@@ -102,6 +90,7 @@ describe('User Service Unit Test', () => {
       name: '김라임',
       phoneNumber: '010-4331-1620',
       petCategory: 'cat',
+      profileImg: 'http://test.com',
     };
     try {
       mockUserRepository.findUserByEmail.mockResolvedValue(mockReturn);
@@ -110,7 +99,8 @@ describe('User Service Unit Test', () => {
         mockReturnValue.password,
         mockReturnValue.name,
         mockReturnValue.phoneNumber,
-        mockReturnValue.petCategory
+        mockReturnValue.petCategory,
+        mockReturnValue.profileImg
       );
     } catch (err) {
       expect(err).toBeInstanceOf(CustomError);
@@ -128,6 +118,7 @@ describe('User Service Unit Test', () => {
       name: '김라임',
       phoneNumber: '010-4331-1620',
       petCategory: 'cat',
+      profileImg: 'http://test.com',
     };
     try {
       mockUserRepository.findUserByEmail.mockResolvedValue(null);
@@ -137,7 +128,8 @@ describe('User Service Unit Test', () => {
         mockReturnValue.password,
         mockReturnValue.name,
         mockReturnValue.phoneNumber,
-        mockReturnValue.petCategory
+        mockReturnValue.petCategory,
+        mockReturnValue.profileImg
       );
     } catch (err) {
       expect(err).toBeInstanceOf(CustomError);

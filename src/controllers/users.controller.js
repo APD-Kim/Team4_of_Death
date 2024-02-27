@@ -102,7 +102,7 @@ export class UserController {
 
       console.log(uploadImage);
       if (!uploadImage) {
-        throw new CustomError(400, '이미지 파일 업로드에 실패하였습니다.');
+        throw new CustomError(400, '이미지 DB저장에 실패하였습니다.');
       }
 
       res.status(201).json({ message: '이미지 업로드 완료', data: postImage });
