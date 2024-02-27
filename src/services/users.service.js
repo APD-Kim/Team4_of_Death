@@ -12,7 +12,7 @@ export class UserService {
   constructor(userRepository) {
     this.userRepository = userRepository;
   }
-  signUp = async (email, password, name, phoneNumber, petCategory) => {
+  signUp = async (email, password, name, phoneNumber, petCategory, profileImg) => {
     const user = await this.userRepository.findUserByEmail(email);
     if (user) {
       throw new CustomError(409, '이미 가입된 이메일입니다.');
@@ -27,7 +27,8 @@ export class UserService {
       hashedPassword,
       name,
       phoneNumber,
-      petCategory
+      petCategory,
+      profileImg
     );
     return {
       userId: createdUser.createdUser.userId,
@@ -37,6 +38,7 @@ export class UserService {
       role: createdUser.createdUser.role,
       isTrainer: createdUser.createdUser.isTrainer,
       petCategory: createdUser.createdUser.petCategory,
+      profileImg: createdUser.createdUser.profileImg,
       pointId: createdUser.point.pointId,
       point: createdUser.point.point,
     };
