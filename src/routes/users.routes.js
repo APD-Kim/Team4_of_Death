@@ -19,12 +19,12 @@ const userRepository = new UserRepository(prisma, redisCli);
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
-router.post('/sign-up', userController.signUp);
+router.post('/sign-up', upload.single('profileImage'), userController.signUp);
 router.post('/login', userController.logIn);
 router.post('/refresh', authJwt, userController.issueRefreshToken);
 
 //3. 싱글이미지 파일 업로드(라우터)
-router.post('/upload-image', upload.single('img'), userController.uploadImage);
+router.post('/upload-image', upload.single('profileImage'), userController.uploadImage);
 
 /** 사용자 이미지-게시글 업로드 */
 const upload2 = multer(); // upload2.none() 용도 : multipart/form-data > textarea 형식 처리

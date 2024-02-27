@@ -24,7 +24,7 @@ export class UserRepository {
     });
     return findUser;
   };
-  signUpWithEmail = async (email, password, name, phoneNumber, petCategory) => {
+  signUpWithEmail = async (email, password, name, phoneNumber, petCategory, profileImg) => {
     const result = await this.prisma.$transaction(async (prisma) => {
       const createdUser = await prisma.users.create({
         data: {
@@ -33,6 +33,7 @@ export class UserRepository {
           name,
           phoneNumber,
           petCategory,
+          profileImg,
         },
       });
       const point = await prisma.points.create({
