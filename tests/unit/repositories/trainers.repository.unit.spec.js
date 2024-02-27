@@ -81,14 +81,22 @@ describe('Trainer Repository Unit Test', () => {
     expect(trainerRepository.prisma.trainers.findMany).toHaveBeenCalledTimes(1);
   });
 
-  it('findOneUser', async () => {
+  it('findOneTrainer', async () => {
     const mockReturn = 'findFirst String';
-    mockPrisma.trainers.findFirst.mockReturnValue(mockReturn);
+    mockPrisma.trainers.findFirst.mockResolvedValue(mockReturn);
 
-    const findOneTrainerData = await trainerRepository.findOneTrainer();
+    const findOneTrainerData = await trainerRepository.findOneTrainer(1);
 
     expect(findOneTrainerData).toEqual(mockReturn);
     expect(trainerRepository.prisma.trainers.findFirst).toHaveBeenCalledTimes(1);
+    // expect(trainerRepository.prisma.trainers.findFirst).toHaveBeenCalledWith({
+    //   where: {
+    //     reviewId: +1,
+    //   },
+    //   include: {
+    //     userId: true,
+    //   },
+    // });
   });
 
   it('updateTrainer', async () => {
@@ -123,5 +131,34 @@ describe('Trainer Repository Unit Test', () => {
     expect(mockPrisma.trainers.delete).toHaveBeenCalledWith({
       where: { trainerId: +1 },
     });
+  });
+
+  it('findOneUser', async () => {
+    const mockReturn = 'findFirst String';
+    mockPrisma.trainers.findFirst.mockReturnValue(mockReturn);
+
+    const findOneUserData = await trainerRepository.findOneUser(1);
+
+    expect(findOneUserData).toEqual(mockReturn);
+    expect(trainerRepository.prisma.trainers.findFirst).toHaveBeenCalledTimes(1);
+    // expect(trainerRepository.prisma.trainers.findFirst).toHaveBeenCalledWith(
+    //   {
+    //     userId: 1,
+    //   },
+    //   {
+    //     users: {
+    //       name: '김라임',
+    //       email: 'popcon9406201@gmail.com',
+    //       password: '123456',
+    //       profileImg: null,
+    //       phoneNumber: '010-4311-1111',
+    //       role: 'user',
+    //       petCategory: 'cat',
+    //       createdAt: '2024-02-24T05:09:47.025Z',
+    //       updatedAt: '2024-02-24T05:09:47.025Z',
+    //       isTrainer: false,
+    //     },
+    //   }
+    // );
   });
 });
