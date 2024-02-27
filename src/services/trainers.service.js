@@ -56,8 +56,6 @@ export class TrainerService {
 
   /**카테고리별 펫시터 조회 */
   findTrainerByCategory = async (category) => {
-    console.log('findTrainerByCategory');
-    console.log(category);
     const trainerList = await this.trainerRepository.findTrainerByCategory(category);
     if (!trainerList) {
       throw new CustomError(400, '해당 카테고리내 트레이너가 존재하지 않습니다.');
@@ -73,5 +71,34 @@ export class TrainerService {
   deleteTrainer = async (trainerId) => {
     const trainer = await this.trainerRepository.deleteTrainer(trainerId);
     return trainer;
+  };
+
+  findTrainersNoDate = async (startDate, endDate) => {
+    const regex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
+    const regexStartDate = regex.test(startDate);
+    const regexEndDate = regex.test(endDate);
+
+    if (!regexStartDate || !regexEndDate) {
+      throw new CustomError(400, '날짜 형식이 잘못 됐습니다.');
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const today = new Date();
+
+    if (start < today) {
+      throw new CustomError(400, '조회가 불가합니다.');
+    }
+
+    if (start > end) {
+      throw new CustomError(400, '시작일자가 종료일자보다 작아야 합니다.');
+    }
+
+    const startTime = startDate + 'T00:00:00Z';
+    const endTime = endDate + 'T23:59:59Z';
+
+    const noReservedTrainer = await this.trainerRepository.findTrainersNoDate(startTime, endTime);
+
+    return noReservedTrainer;
   };
 }
