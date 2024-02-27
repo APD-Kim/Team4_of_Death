@@ -1,6 +1,8 @@
 import CustomError from '../utils/errorHandler.js';
 import { sendMail } from '../utils/auth.js';
 import { redisClient } from '../model/redis.js';
+import 'dotenv/config';
+
 export class UserController {
   constructor(userService) {
     this.userService = userService;
@@ -8,6 +10,8 @@ export class UserController {
   signUp = async (req, res, next) => {
     try {
       const { email, password, passwordCheck, name, phoneNumber, petCategory } = req.body;
+      let profileImg = '';
+
       if (!email || !password || !passwordCheck || !name || !phoneNumber || !petCategory) {
         throw new CustomError(400, '요청이 잘못 되었습니다.');
       }
@@ -17,8 +21,15 @@ export class UserController {
       if (password !== passwordCheck) {
         throw new CustomError(400, '비밀번호를 다시 확인하세요.');
       }
+
+      if (!req.file || req.file.location.length == 0) {
+        profileImg = 'https://mybucket-s3-test99.s3.ap-northeast-2.amazonaws.com/imgStorage/defaultUser.png';
+      } else {
+        profileImg = req.file.location;
+      }
+
       await this.userService.validatePhoneNumber(phoneNumber);
-      const signedUser = await this.userService.signUp(email, password, name, phoneNumber, petCategory);
+      const signedUser = await this.userService.signUp(email, password, name, phoneNumber, petCategory, profileImg);
 
       res.status(201).json({ message: '회원가입 완료', data: signedUser });
     } catch (err) {
