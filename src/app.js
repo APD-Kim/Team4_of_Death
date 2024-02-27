@@ -16,7 +16,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use('/users', userRouter);
-
 app.use('/reviews', reviewRouter);
 app.use('/trainers', trainersRouter);
 app.use('/reservations', reservationRouter);

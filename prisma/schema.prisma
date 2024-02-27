@@ -39,6 +39,7 @@ model PointHistory {
   status       PointStatus
   createdAt    DateTime    @default(now())
   points       Points      @relation(fields: [pointId], references: [pointId])
+
   @@index([pointId], map: "PointHistory_pointId_fkey")
 }
 model Trainers {
@@ -91,11 +92,13 @@ model Likes {
   @@unique([userId, trainerId])
   @@index([trainerId], map: "Likes_trainerId_fkey")
 }
+
 enum ReserveStatus {
   STANDBY
   ACCEPT
   CANCEL
 }
+
 enum PointStatus {
   FILL
   RESERVE

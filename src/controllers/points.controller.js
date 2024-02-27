@@ -4,7 +4,7 @@ export class PointController {
   constructor(pointService) {
     this.pointService = pointService;
   }
-  cacluatePoint = async (req, res, next) => {
+  calculatePoint = async (req, res, next) => {
     try {
       const { userId } = req.user;
       let { point, status, adjustment } = req.body;
@@ -17,7 +17,7 @@ export class PointController {
       status = status.toUpperCase();
       adjustment = adjustment.toLowerCase();
 
-      const caclulatedPoint = await this.pointService.caculateUserPoint(userId, point, status, adjustment);
+      const caclulatedPoint = await this.pointService.calculateUserPoint(userId, point, status, adjustment);
       if (adjustment === 'increment') {
         res.status(200).json({ message: '포인트가 충전되었습니다.', data: caclulatedPoint });
       } else {

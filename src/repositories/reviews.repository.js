@@ -17,9 +17,8 @@ export class ReviewRepository {
   };
 
   findReviews = async (trainerId) => {
-
     const reviews = await this.prisma.reviews.findMany({
-      where: {trainerId: +trainerId},
+      where: { trainerId: +trainerId },
       select: {
         reviewId: true,
         users: { select: { name: true } },
@@ -30,10 +29,8 @@ export class ReviewRepository {
       },
     });
 
-
-    return reviews
-  }
-
+    return reviews;
+  };
 
   findUserIdByReviewId = async (reviewId) => {
     const user = await this.prisma.reviews.findUnique({
