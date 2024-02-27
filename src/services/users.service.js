@@ -1,6 +1,12 @@
 import CustomError from '../utils/errorHandler.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
+import multerS3 from 'multer-s3';
+import aws from 'aws-sdk';
+//aws.config.loadFromPath(__dirname + '/../../.env');
+import path from 'path';
+import 'dotenv/config';
 
 export class UserService {
   constructor(userRepository) {
@@ -65,4 +71,24 @@ export class UserService {
       saveRefreshToken,
     };
   };
+
+  /** 사용자 이미지 업로드 */
+  uploadImage = async (userId, imageURL) => {
+    const uploadImage = await this.userRepository.uploadImage(userId, imageURL);
+
+    console.log(uploadImage);
+    if (!uploadImage) {
+      throw new CustomError(400, '이미지 파일 DB저장에 실패하였습니다.');
+    }
+    return uploadImage;
+  };
+
+  /** 사용자 이미지 조회 */
+  showImage = async () => {};
+
+  /** 사용자 이미지 수정 */
+  updateImage = async () => {};
+
+  /** 사용자 이미지 삭제 */
+  deleteImage = async () => {};
 }
