@@ -108,4 +108,16 @@ export class TrainerController {
       next(err);
     }
   };
+
+  findTrainersNoDate = async (req, res, next) => {
+    try {
+      const date = req.body;
+
+      const reservationPossibleTrainers = await this.trainerService.findTrainersNoDate(date);
+
+      return res.status(200).json({ data: reservationPossibleTrainers });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

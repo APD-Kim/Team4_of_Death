@@ -21,5 +21,5 @@ router.get('/category/:category', trainerController.findTrainerByCategory);
 
 router.put('/:trainerId', trainerController.updateTrainer);
 router.delete('/:trainerId', trainerController.deleteTrainer);
-
+router.get('/reservation-possible', trainerController.findTrainersNoDate);
 export default router;

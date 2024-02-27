@@ -37,24 +37,22 @@ export class TrainerService {
     return trainer;
   };
 
-
   LikeTrainer = async (userId, trainerId) => {
-    const findLike = await this.trainerRepository.existLike(userId, trainerId)
+    const findLike = await this.trainerRepository.existLike(userId, trainerId);
     if (findLike) {
-      await this.trainerRepository.cancelLikeTrainer(userId, trainerId)
+      await this.trainerRepository.cancelLikeTrainer(userId, trainerId);
       return {
-        status: "cancelLiked"
-      }
+        status: 'cancelLiked',
+      };
     }
-    const liked = await this.trainerRepository.LikeTrainer(userId, trainerId)
+    const liked = await this.trainerRepository.LikeTrainer(userId, trainerId);
     if (!liked) {
-      throw new CustomError(400, "좋아요 생성중 오류가 발생했습니다.")
+      throw new CustomError(400, '좋아요 생성중 오류가 발생했습니다.');
     }
     return {
-      status: "liked"
-    }
-  }
-
+      status: 'liked',
+    };
+  };
 
   /**카테고리별 펫시터 조회 */
   findTrainerByCategory = async (category) => {
@@ -73,5 +71,18 @@ export class TrainerService {
   deleteTrainer = async (trainerId) => {
     const trainer = await this.trainerRepository.deleteTrainer(trainerId);
     return trainer;
+  };
+
+  findTrainersNoDate = async (date) => {
+    const regex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
+    const regexDate = regex.test(date);
+
+    if (!regexDate) {
+      throw new CustomError(400, '날짜 형식이 잘못 됐습니다.');
+    }
+
+    const noReservedTrainer = await this.trainerRepository.findTrainersNoDate(date);
+
+    return noReservedTrainer;
   };
 }

@@ -144,3 +144,22 @@ export class TrainerRepository {
     return trainer;
   };
 }
+
+findTrainersNoDate = async (date) => {
+  const noReservation = await this.prisma.trainers.findMany({
+    where: {
+      NOT: {
+        reservations: {
+          some: {
+            startDate: date,
+          },
+        },
+      },
+    },
+    select: {
+      trainerId: true,
+    },
+  });
+
+  return noReservation;
+};
