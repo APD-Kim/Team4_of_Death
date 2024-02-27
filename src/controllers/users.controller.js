@@ -74,7 +74,7 @@ export class UserController {
 
     res.status(200).json({ message: refreshToken });
   };
-  
+
   sendEmailVerification = async (req, res, next) => {
     try {
       const { email } = req.params;
