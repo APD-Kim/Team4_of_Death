@@ -59,15 +59,6 @@ export class UserRepository {
     return savedToken;
   };
 
-  saveVerificationCode = async (verificationCode) => {
-    const verifyCode = await this.prisma.users.create({
-      data: {
-        code: verificationCode,
-      }
-    })
-    return verifyCode;
-  }
-
   verifyEmailUpdate = async (email) => {
     const updatedUser = await this.prisma.users.update({
       where: {
