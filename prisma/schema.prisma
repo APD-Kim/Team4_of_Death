@@ -19,6 +19,8 @@ model Users {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   isTrainer    Boolean        @default(false)
+  isVerified   Boolean        @default(false)
+  code         String?
   likes        Likes[]
   points       Points?
   reservations Reservations[]

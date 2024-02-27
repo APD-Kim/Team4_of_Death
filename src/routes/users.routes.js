@@ -15,5 +15,6 @@ const userController = new UserController(userService);
 router.post('/sign-up', userController.signUp);
 router.post('/login', userController.logIn);
 router.post('/refresh', authJwt, userController.issueRefreshToken);
-
+router.get('/verification/:email', userController.sendEmailVerification);
+router.post('/verification', userController.verifyEmail);
 export default router;

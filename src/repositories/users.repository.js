@@ -58,4 +58,26 @@ export class UserRepository {
     const savedToken = await this.redis.set(`refreshToken:${userId}`, refreshToken, { EX: 3600 * 24 * 7 });
     return savedToken;
   };
+
+  saveVerificationCode = async (verificationCode) => {
+    const verifyCode = await this.prisma.users.create({
+      data: {
+        code: verificationCode,
+      }
+    })
+    return verifyCode;
+  }
+
+  verifyEmailUpdate = async (email) => {
+    const updatedUser = await this.prisma.users.update({
+      where: {
+        email: email,
+      },
+      data: {
+        isVerified: true,
+      },
+    });
+    return updatedUser;
+  };
+  
 }

@@ -65,4 +65,12 @@ export class UserService {
       saveRefreshToken,
     };
   };
+  
+  verifyEmail = async (email) => {
+    const user = await this.userRepository.findUserByEmail(email);
+    if (!user) {
+      throw new CustomError(404, '사용자를 찾을 수 없습니다.');
+    }
+    await this.userRepository.verifyEmailUpdate(email); // 이메일 인증 상태를 업데이트
+  }
 }
