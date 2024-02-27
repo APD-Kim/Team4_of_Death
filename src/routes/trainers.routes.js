@@ -13,6 +13,7 @@ const router = express.Router();
 
 router.post('/', trainerController.registerTrainer);
 router.get('/', trainerController.findAllTrainer);
+router.get('/available-for-reservation', trainerController.findTrainersNoDate); //일자 별로 예약가능한 트레이너 조회
 router.get('/:trainerId', trainerController.findOneTrainer);
 router.post('/:trainerId/likes', authJwt, trainerController.likesTrainer);
 
@@ -21,5 +22,4 @@ router.get('/category/:category', trainerController.findTrainerByCategory);
 
 router.put('/:trainerId', trainerController.updateTrainer);
 router.delete('/:trainerId', trainerController.deleteTrainer);
-router.get('/reservation-possible', trainerController.findTrainersNoDate);
 export default router;

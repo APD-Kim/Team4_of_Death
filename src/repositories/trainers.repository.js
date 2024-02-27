@@ -143,23 +143,27 @@ export class TrainerRepository {
     });
     return trainer;
   };
-}
 
-findTrainersNoDate = async (date) => {
-  const noReservation = await this.prisma.trainers.findMany({
-    where: {
-      NOT: {
-        reservations: {
-          some: {
-            startDate: date,
+  findTrainersNoDate = async (startTime, endTime) => {
+    const noReservation = await this.prisma.trainers.findMany({
+      where: {
+        NOT: {
+          reservations: {
+            some: {
+              AND: [{ startDate: { lte: endTime } }, { endDate: { gte: startTime } }],
+            },
           },
         },
       },
-    },
-    select: {
-      trainerId: true,
-    },
-  });
+      select: {
+        trainerId: true,
+        users: { select: { name: true } },
+        petCategory: true,
+        price: true,
+        career: true,
+      },
+    });
 
-  return noReservation;
-};
+    return noReservation;
+  };
+}

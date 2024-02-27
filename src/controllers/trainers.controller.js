@@ -111,9 +111,9 @@ export class TrainerController {
 
   findTrainersNoDate = async (req, res, next) => {
     try {
-      const date = req.body;
+      const { startDate, endDate } = req.body;
 
-      const reservationPossibleTrainers = await this.trainerService.findTrainersNoDate(date);
+      const reservationPossibleTrainers = await this.trainerService.findTrainersNoDate(startDate, endDate);
 
       return res.status(200).json({ data: reservationPossibleTrainers });
     } catch (err) {
