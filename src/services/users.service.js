@@ -1,12 +1,18 @@
 import CustomError from '../utils/errorHandler.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
+import multerS3 from 'multer-s3';
+import aws from 'aws-sdk';
+//aws.config.loadFromPath(__dirname + '/../../.env');
+import path from 'path';
+import 'dotenv/config';
 
 export class UserService {
   constructor(userRepository) {
     this.userRepository = userRepository;
   }
-  signUp = async (email, password, name, phoneNumber, petCategory) => {
+  signUp = async (email, password, name, phoneNumber, petCategory, profileImg) => {
     const user = await this.userRepository.findUserByEmail(email);
     if (user) {
       throw new CustomError(409, '이미 가입된 이메일입니다.');
@@ -21,7 +27,8 @@ export class UserService {
       hashedPassword,
       name,
       phoneNumber,
-      petCategory
+      petCategory,
+      profileImg
     );
     return {
       userId: createdUser.createdUser.userId,
@@ -31,6 +38,7 @@ export class UserService {
       role: createdUser.createdUser.role,
       isTrainer: createdUser.createdUser.isTrainer,
       petCategory: createdUser.createdUser.petCategory,
+      profileImg: createdUser.createdUser.profileImg,
       pointId: createdUser.point.pointId,
       point: createdUser.point.point,
     };
@@ -73,4 +81,24 @@ export class UserService {
     }
     await this.userRepository.verifyEmailUpdate(email); // 이메일 인증 상태를 업데이트
   }
+
+  /** 사용자 이미지 업로드 */
+  uploadImage = async (userId, imageURL) => {
+    const uploadImage = await this.userRepository.uploadImage(userId, imageURL);
+
+    console.log(uploadImage);
+    if (!uploadImage) {
+      throw new CustomError(400, '이미지 파일 DB저장에 실패하였습니다.');
+    }
+    return uploadImage;
+  };
+
+  /** 사용자 이미지 조회 */
+  showImage = async () => {};
+
+  /** 사용자 이미지 수정 */
+  updateImage = async () => {};
+
+  /** 사용자 이미지 삭제 */
+  deleteImage = async () => {};
 }
