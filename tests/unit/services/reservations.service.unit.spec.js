@@ -10,13 +10,26 @@ const mockReservationRepository = {
   updateReservation: jest.fn(),
   update: jest.fn(),
   deleteReservation: jest.fn(),
+  reserveDate: jest.fn(),
+  searchDates: jest.fn(),
+};
+const mockTrainerRepository = {
+  findOneTrainer: jest.fn(),
+};
+const mockPointRepository = {
+  searchPoint: jest.fn(),
+  calculatePoint: jest.fn(),
 };
 const mockRes = {
   status: jest.fn().mockReturnThis(),
   json: jest.fn().mockReturnThis(),
 };
 
-const reservationService = new ReservationService(mockReservationRepository);
+const reservationService = new ReservationService(
+  mockReservationRepository,
+  mockTrainerRepository,
+  mockPointRepository
+);
 
 describe('Reservation Service Unit Test', () => {
   beforeEach(() => {
@@ -115,5 +128,154 @@ describe('Reservation Service Unit Test', () => {
     expect(deletedReservation).toEqual({ message: '예약 정보를 삭제하였습니다.' });
     expect(mockReservationRepository.deleteReservation).toHaveBeenCalledWith(reservationId);
     expect(mockReservationRepository.deleteReservation).toHaveBeenCalledTimes(1);
+  });
+  test('reserveDate method by success', async () => {
+    const params = {
+      userId: 1,
+      trainerId: 2,
+      startDate: '2025-11-12',
+      endDate: '2025-11-13',
+    };
+    const searchPointReturnValue = {
+      point: 30000,
+    };
+    const findOneTrainerReturnValue = {
+      price: 300,
+    };
+    const searchDatesReturnValue = [];
+    const reserveDateReturnValue = 'reserve completed';
+    const calculatePointReturnValue = 'point calculated';
+    mockPointRepository.searchPoint.mockResolvedValue(searchPointReturnValue);
+    mockTrainerRepository.findOneTrainer.mockResolvedValue(findOneTrainerReturnValue);
+    mockReservationRepository.searchDates.mockResolvedValue(searchDatesReturnValue);
+    mockReservationRepository.reserveDate.mockResolvedValue(reserveDateReturnValue);
+    mockPointRepository.calculatePoint.mockResolvedValue(calculatePointReturnValue);
+    const result = await reservationService.reserveDate(
+      params.userId,
+      params.trainerId,
+      params.startDate,
+      params.endDate
+    );
+    expect(mockPointRepository.searchPoint).toHaveBeenCalledTimes(1);
+    expect(mockPointRepository.searchPoint).toHaveBeenCalledWith(params.userId);
+    expect(mockTrainerRepository.findOneTrainer).toHaveBeenCalledTimes(1);
+    expect(mockTrainerRepository.findOneTrainer).toHaveBeenCalledWith(params.trainerId);
+    expect(mockReservationRepository.searchDates).toHaveBeenCalledTimes(1);
+    expect(mockReservationRepository.searchDates).toHaveBeenCalledWith(
+      params.trainerId,
+      params.startDate,
+      params.endDate
+    );
+    expect(mockReservationRepository.reserveDate).toHaveBeenCalledTimes(1);
+    expect(mockReservationRepository.reserveDate).toHaveBeenCalledWith(
+      params.userId,
+      params.trainerId,
+      '2025-11-12T00:00:00Z',
+      '2025-11-13T23:59:59Z'
+    );
+    expect(mockPointRepository.calculatePoint).toHaveBeenCalledTimes(1);
+    expect(mockPointRepository.calculatePoint).toHaveBeenCalledWith(params.userId, 600, 'RESERVE', 'decrement');
+    expect(result).toEqual({ reservedDate: reserveDateReturnValue, subPoint: calculatePointReturnValue });
+  });
+  test('reserveDate method failed by invalid dates', async () => {
+    const params = {
+      userId: 1,
+      trainerId: 2,
+      startDate: '19971-1112',
+      endDate: '1997-1113',
+    };
+    try {
+      await reservationService.reserveDate(params.userId, params.trainerId, params.startDate, params.endDate);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('날짜 형식이 잘못 됐습니다.');
+      expect(err.statusCode).toEqual(400);
+    }
+  });
+  test('reserveDate method failed by wrong startDate', async () => {
+    const params = {
+      userId: 1,
+      trainerId: 2,
+      startDate: '1997-11-14',
+      endDate: '1997-11-13',
+    };
+    try {
+      await reservationService.reserveDate(params.userId, params.trainerId, params.startDate, params.endDate);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('시작 날짜는 반드시 종료 날짜보다 전이어야 합니다.');
+      expect(err.statusCode).toEqual(400);
+    }
+  });
+  test('reserveDate method failed by cannot found trainer', async () => {
+    const params = {
+      userId: 1,
+      trainerId: 2,
+      startDate: '2025-11-12',
+      endDate: '2025-11-13',
+    };
+    try {
+      mockPointRepository.searchPoint.mockResolvedValue({ point: 3000 });
+      mockTrainerRepository.findOneTrainer.mockResolvedValue(null);
+      await reservationService.reserveDate(params.userId, params.trainerId, params.startDate, params.endDate);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('해당 트레이너를 찾을 수 없습니다.');
+      expect(err.statusCode).toEqual(404);
+    }
+  });
+  test('reserveDate method failed by exist reserved date', async () => {
+    const params = {
+      userId: 1,
+      trainerId: 2,
+      startDate: '2025-11-12',
+      endDate: '2025-11-13',
+    };
+    try {
+      mockPointRepository.searchPoint.mockResolvedValue({ point: 3000 });
+      mockTrainerRepository.findOneTrainer.mockResolvedValue({ price: 300 });
+      mockReservationRepository.searchDates.mockResolvedValue(['reserved', 'reserved']);
+      await reservationService.reserveDate(params.userId, params.trainerId, params.startDate, params.endDate);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('이미 예약되어있습니다.');
+      expect(err.statusCode).toEqual(409);
+    }
+  });
+  test('reserveDate method failed by cannot reserve 7days over', async () => {
+    const params = {
+      userId: 1,
+      trainerId: 2,
+      startDate: '2025-11-12',
+      endDate: '2025-11-13',
+    };
+    try {
+      mockPointRepository.searchPoint.mockResolvedValue({ point: 3000 });
+      mockTrainerRepository.findOneTrainer.mockResolvedValue({ price: 300 });
+      mockReservationRepository.searchDates.mockResolvedValue([]);
+      await reservationService.reserveDate(params.userId, params.trainerId, params.startDate, params.endDate);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('7일 이상 예약할 수 없습니다.');
+      expect(err.statusCode).toEqual(400);
+    }
+  });
+  test('reserveDate method failed by not enough point', async () => {
+    const params = {
+      userId: 1,
+      trainerId: 2,
+      startDate: '2025-11-12',
+      endDate: '2025-11-13',
+    };
+    try {
+      mockPointRepository.searchPoint.mockResolvedValue({ point: 0 });
+      mockTrainerRepository.findOneTrainer.mockResolvedValue({ price: 300 });
+      mockReservationRepository.searchDates.mockResolvedValue([]);
+      await reservationService.reserveDate(params.userId, params.trainerId, params.startDate, params.endDate);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('포인트가 충분하지 않습니다.');
+      expect(err.statusCode).toEqual(400);
+    }
   });
 });

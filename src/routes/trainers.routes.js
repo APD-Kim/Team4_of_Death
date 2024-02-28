@@ -11,7 +11,7 @@ const trainerController = new TrainerController(trainerService);
 
 const router = express.Router();
 
-router.post('/', trainerController.registerTrainer);
+router.post('/', authJwt, trainerController.registerTrainer);
 router.get('/', trainerController.findAllTrainer);
 router.get('/:trainerId', trainerController.findOneTrainer);
 router.post('/:trainerId/likes', authJwt, trainerController.likesTrainer);

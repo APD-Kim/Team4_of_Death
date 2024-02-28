@@ -5,7 +5,6 @@ import reviewRouter from "./routes/reviews.routes.js";
 import reservationRouter from './routes/reservations.routes.js';
 import trainersRouter from '../src/routes/trainers.routes.js';
 import pointRouter from "../src/routes/points.routes.js"
-
 import CustomError from "./utils/errorHandler.js";
 import "dotenv/config";
 

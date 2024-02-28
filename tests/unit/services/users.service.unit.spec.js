@@ -1,9 +1,7 @@
 import { UserService } from '../../../src/services/users.service';
 import { beforeEach, describe, expect, jest } from '@jest/globals';
 import CustomError from '../../../src/utils/errorHandler';
-
 import bcrypt from 'bcrypt';
-
 const mockUserRepository = {
   findUserByEmail: jest.fn(),
   findUserByPhoneNumber: jest.fn(),
@@ -13,33 +11,14 @@ const mockBcrypt = {
   hash: jest.fn(),
   compare: jest.fn(),
 };
-
 const userService = new UserService(mockUserRepository);
-
 describe('User Service Unit Test', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
-
   it('signUp method by Success', async () => {
     const mockReturn = null;
     const mockReturnValue = {
-
-      email: 'popcon9406201431@gmail.com',
-      password: '123456',
-      name: '김라임',
-      phoneNumber: '010-4331-1620',
-      petCategory: 'cat',
-    };
-    const returnValue = {
-      userId: '1',
-      email: 'popcon9406201431@gmail.com',
-      isTrainer: false,
-      name: '김라임',
-      phoneNumber: '010-4331-1620',
-      petCategory: 'cat',
-      role: 'user',
-
       name: '김라임',
       email: 'popcon94062646@gmail.com',
       phoneNumber: '010-4331-1330',
@@ -60,6 +39,7 @@ describe('User Service Unit Test', () => {
         pointId: 2,
         point: 300,
       },
+      //날것
     };
     const createdUserData = {
       userId: '1',
@@ -71,7 +51,6 @@ describe('User Service Unit Test', () => {
       petCategory: 'cat',
       pointId: 2,
       point: 300,
-
     };
     const hashed = '1234566';
     mockUserRepository.findUserByEmail.mockResolvedValue(mockReturn);
@@ -85,11 +64,7 @@ describe('User Service Unit Test', () => {
       mockReturnValue.phoneNumber,
       mockReturnValue.petCategory
     );
-
-    expect(createdUser).toEqual(returnValue);
-
     expect(createdUser).toEqual(createdUserData);
-    
     expect(mockUserRepository.findUserByEmail).toHaveBeenCalledTimes(1);
     expect(mockUserRepository.findUserByPhoneNumber).toHaveBeenCalledTimes(1);
     expect(mockUserRepository.signUpWithEmail).toHaveBeenCalledTimes(1);

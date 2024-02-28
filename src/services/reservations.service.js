@@ -13,18 +13,23 @@ export class ReservationService {
     if (!regexStart || !regexEnd) {
       throw new CustomError(400, '날짜 형식이 잘못 됐습니다.');
     }
-    if (new Date(startDate) > new Date(endDate)) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const today = new Date();
+    if (start > end) {
       throw new CustomError(400, '시작 날짜는 반드시 종료 날짜보다 전이어야 합니다.');
+    }
+    if (today > start || today > end) {
+      throw new CustomError(400, '과거의 날짜를 예약할 수 없습니다.');
     }
     const user = await this.pointRepository.searchPoint(userId);
     const userPoint = user.point;
-    console.log(userPoint);
     const trainer = await this.trainerRepository.findOneTrainer(trainerId);
     if (!trainer) {
       throw new CustomError(404, '해당 트레이너를 찾을 수 없습니다.');
     }
     const { price } = trainer;
-    const daysDiff = Math.round((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24) + 1);
+    const daysDiff = Math.round((end - start) / (1000 * 60 * 60 * 24) + 1);
     const totalPrice = daysDiff * price;
     const possibleDates = await this.reservationRepository.searchDates(trainerId, startDate, endDate);
     if (possibleDates.length !== 0) throw new CustomError(409, '이미 예약되어있습니다.');
@@ -33,26 +38,24 @@ export class ReservationService {
     if (totalPrice > userPoint) {
       throw new CustomError(400, '포인트가 충분하지 않습니다.');
     }
-    startDate = startDate + 'T08:00:00Z';
-    endDate = endDate + 'T20:00:00Z';
+    startDate = startDate + 'T00:00:00Z';
+    endDate = endDate + 'T23:59:59Z';
     const reservedDate = await this.reservationRepository.reserveDate(userId, trainerId, startDate, endDate);
     const status = 'RESERVE';
     const adjustment = 'decrement';
-    const subPoint = await this.pointRepository.caculatePoint(userId, totalPrice, status, adjustment);
+    const subPoint = await this.pointRepository.calculatePoint(userId, totalPrice, status, adjustment);
     return { reservedDate, subPoint };
   };
 
   findPossibleDates = async (trainerId) => {
+    const PossibleDates = await this.reservationRepository.findPossibleDates(trainerId);
 
-      const PossibleDates = await this.reservationRepository.findPossibleDates(trainerId);
-
-      return PossibleDates.map((reservation) => ({
-        reservationId: reservation.reservationId,
-        startDate: reservation.startDate,
-        endDate: reservation.endDate,
-        petCategory: reservation.trainers.petCategory,
-      }));
-
+    return PossibleDates.map((reservation) => ({
+      reservationId: reservation.reservationId,
+      startDate: reservation.startDate,
+      endDate: reservation.endDate,
+      petCategory: reservation.trainers.petCategory,
+    }));
   };
 
   findReservationById = async (reservationId) => {

@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export class UserService {
-  constructor(userRepository) {
+  constructor(userRepository, bcrypt) {
     this.userRepository = userRepository;
   }
   signUp = async (email, password, name, phoneNumber, petCategory) => {
@@ -62,7 +62,7 @@ export class UserService {
 
     return {
       bearerToken,
-      saveRefreshToken,
+      bearerRefreshToken,
     };
   };
 }
