@@ -1,7 +1,6 @@
 import { UserService } from '../../../src/services/users.service';
 import { beforeEach, describe, expect, jest } from '@jest/globals';
 import CustomError from '../../../src/utils/errorHandler';
-
 import bcrypt from 'bcrypt';
 
 const mockUserRepository = {
