@@ -8,21 +8,12 @@ const mockTrainerRepository = {
 }
 
 const mockReservationRepository = {
-  findPossibleDatesForTrainer: jest.fn(), 
+  findTrainerPossibleReservations: jest.fn(), 
   findReservationDates: jest.fn(),
   findReservationById: jest.fn(),
   findReservationByIdUnique: jest.fn(),
   updateReservation: jest.fn(),
   deleteReservation: jest.fn(),
-  reserveDate: jest.fn(),
-  isReservatedDate: jest.fn(),
-};
-const mockTrainerRepository = {
-  findOneTrainer: jest.fn(),
-};
-const mockPointRepository = {
-  searchPoint: jest.fn(),
-  calculatePoint: jest.fn(),
 };
 const mockRes = {
   status: jest.fn().mockReturnThis(),
@@ -41,11 +32,13 @@ describe('Reservation Service Unit Test', () => {
     mockRes.status.mockReturnValue(mockRes);
   });
 
-  test('find Possible Dates For Trainer Method Test', async () => {
-    const mockTrainerId = 1;
+  // test('find Possible Dates For Trainer Method Test', async () => {
+  //   const mockTrainerId = 1;
 
-    mockTrainerRepository.find
-  })
+  //   mockTrainerRepository.findOneTrainer.mockResolvedValue(mockTrainerId);
+  //   mockReservationRepository.findTrainerPossibleReservations.mockResolvedValue()
+
+  // })
 
   test('findReservationDates Method Success', async () => {
     const mockPossibleDates = [

@@ -44,8 +44,15 @@ export class ReservationService {
     const status = 'RESERVE';
     const adjustment = 'decrement';
     const subPoint = await this.pointRepository.calculatePoint(userId, totalPrice, status, adjustment);
-<<<<<<< HEAD
-    return { reservedDate, subPoint };
+    return {
+      trainerId: reservedDate.trainerId,
+      startDate: reservedDate.startDate,
+      endDate: reservedDate.endDate,
+      status: reservedDate.status,
+      createdAt: reservedDate.createdAt,
+      currentPoint: subPoint.updatedResultPoint.point,
+      totalPrice: subPoint.createdHistory.pointChanged,
+    };
   };
 
   // 트레이너의 예약 가능한 날짜 찾기
@@ -91,28 +98,6 @@ export class ReservationService {
         updatedAt: reservation.updatedAt,
       }));
 
-=======
-    return {
-      trainerId: reservedDate.trainerId,
-      startDate: reservedDate.startDate,
-      endDate: reservedDate.endDate,
-      status: reservedDate.status,
-      createdAt: reservedDate.createdAt,
-      currentPoint: subPoint.updatedResultPoint.point,
-      totalPrice: subPoint.createdHistory.pointChanged,
-    };
-  };
-
-  findPossibleDates = async (trainerId) => {
-    const PossibleDates = await this.reservationRepository.findPossibleDates(trainerId);
-
-    return PossibleDates.map((reservation) => ({
-      reservationId: reservation.reservationId,
-      startDate: reservation.startDate,
-      endDate: reservation.endDate,
-      petCategory: reservation.trainers.petCategory,
-    }));
->>>>>>> 9888bb335d9ea601380efe95db295fe954e833e4
   };
 
   findReservationById = async (reservationId) => {
