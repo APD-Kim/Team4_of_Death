@@ -38,19 +38,21 @@ export class ReservationService {
     const reservedDate = await this.reservationRepository.reserveDate(userId, trainerId, startDate, endDate);
     const status = 'RESERVE';
     const adjustment = 'decrement';
-    const subPoint = await this.pointRepository.caculatePoint(userId, totalPrice, status, adjustment);
+    const subPoint = await this.pointRepository.calculatePoint(userId, totalPrice, status, adjustment);
     return { reservedDate, subPoint };
   };
 
-  findPossibleDates = async (trainerId) => {
+  findReservationDates = async (trainerId) => {
 
-      const PossibleDates = await this.reservationRepository.findPossibleDates(trainerId);
+      const reservationDates = await this.reservationRepository.findReservationDates(trainerId);
 
-      return PossibleDates.map((reservation) => ({
+      return reservationDates.map((reservation) => ({
         reservationId: reservation.reservationId,
         startDate: reservation.startDate,
         endDate: reservation.endDate,
         petCategory: reservation.trainers.petCategory,
+        createdAt: reservation.createdAt,
+        updatedAt: reservation.updatedAt,
       }));
 
   };
@@ -60,22 +62,31 @@ export class ReservationService {
     return findReservations;
   };
 
-  updateReservation = async (userId, reservationId, startDate, endDate) => {
-    const findReservation = await this.reservationRepository.findReservationByIdUnique(reservationId);
-    if (userId !== findReservation.userId) {
-      throw new CustomError(404, '해당 예약에 권한이 없습니다.');
-    }
+  findReservationByIdUnique = async(reservationId) => {
+    const reservations = await this.reservationRepository.findReservationByIdUnique(reservationId);
 
-    const updateReservations = await this.reservationRepository.update(reservationId, startDate, endDate);
+    return reservations;
+  }
+
+  updateReservation = async (reservationId, startDate, endDate) => {    
+    // const findReservation = await this.reservationRepository.findReservationByIdUnique(reservationId);
+    // // if (userId !== findReservation.userId) {
+    // //   throw new CustomError(404, '해당 예약에 권한이 없습니다.');
+    // // }
+    
+    const updateReservations = await this.reservationRepository.updateReservation(reservationId, startDate, endDate);
     return {
       reservationId: updateReservations.reservationId,
       startDate: updateReservations.startDate,
       endDate: updateReservations.endDate,
     };
-  };
+};
 
-  deleteReservation = async (reservationId, userId) => {
-    await this.reservationRepository.deleteReservation(reservationId);
-    return { message: '예약 정보를 삭제하였습니다.' };
+
+  deleteReservation = async (reservationId) => {
+    const deletedReservation = await this.reservationRepository.deleteReservation(reservationId);
+    return deletedReservation;
+    // await this.reservationRepository.deleteReservation(reservationId);
+    // return { message: '예약 정보를 삭제하였습니다.' };
   };
 }

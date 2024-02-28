@@ -7,7 +7,8 @@ export class TrainerController {
 
   registerTrainer = async (req, res, next) => {
     try {
-      const { userId, price, career, petCategory, address } = req.body;
+      const { userId } = req.user;
+      const { price, career, petCategory, address } = req.body;
       if (!userId || !price || !career || !petCategory || !address) {
         throw new CustomError(404, '형식이 맞지 않습니다.');
       }

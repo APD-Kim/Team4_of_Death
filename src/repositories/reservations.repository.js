@@ -56,20 +56,17 @@ export class ReservationRepository {
     return findReservations;
   };
 
-  // 트래이너의 가능한 날짜 찾기
-  findPossibleDates = async (trainerId) => {
-    const today = new Date();
-    const PossibleDates = await this.prisma.reservations.findMany({
+  findReservationDates = async (trainerId) => {
+    const reservationDates = await this.prisma.reservations.findMany({
       where: {
         trainerId: +trainerId,
-        // startDate: {
-        //   gte: today.toISOString(), //
-        // },
       },
       select: {
         reservationId: true,
         startDate: true,
         endDate: true,
+        createdAt: true,
+        updatedAt: true,
         trainers: {
           select: {
             petCategory: true,
@@ -80,7 +77,7 @@ export class ReservationRepository {
         startDate: 'asc',
       },
     });
-    return PossibleDates;
+    return reservationDates;
   };
 
   updateReservation = async (reservationId, startDate, endDate) => {

@@ -20,8 +20,8 @@ export class ReservationController {
     try {
       // const {userId} = req.user;
       const { trainerId } = req.body;
-      const PossibleDates = await this.reservationService.findPossibleDates(trainerId);
-      return res.status(200).json({ data: PossibleDates });
+      const reservationDates = await this.reservationService.findReservationDates(trainerId);
+      return res.status(200).json({ data: reservationDates });
     } catch (err) {
       next(err);
     }
@@ -29,10 +29,18 @@ export class ReservationController {
 
   putReservation = async (req, res, next) => {
     try {
-      const {userId} = req.user;
+      const { userId } = req.user;
       const { reservationId } = req.params;
       const { startDate, endDate } = req.body;
 
+      if (!reservationId) {
+        throw new CustomError(404, '잘못된 요청입니다.');
+      }
+
+      const reservations = await this.reservationService.findReservationByIdUnique(reservationId);
+      if (userId !== reservations.userId) {
+        throw new CustomError(400, '예약을 수정할 권한이 없습니다.');
+      }
       const updateReservations = await this.reservationService.updateReservation(reservationId, startDate, endDate);
       return res.status(201).json({ message: '예약 날짜가 수정되었습니다.', data: updateReservations });
     } catch (err) {
@@ -42,14 +50,25 @@ export class ReservationController {
 
   delReservation = async (req, res, next) => {
     try {
-      const {userId} = req.user;
-      console.log(userId);
+      const { userId } = req.user;
       const { reservationId } = req.params;
-      if (!reservationId) {
+      console.log('userId = ', userId);
+
+      if (!reservationId || !userId) {
         throw new CustomError(404, '요청이 잘못 되었습니다.');
       }
 
-      await this.reservationService.findReservationById(reservationId);
+      const reservation = await this.reservationService.findReservationByIdUnique(reservationId);
+
+      if (userId !== reservation.userId) {
+        throw new CustomError(400, '예약 삭제할 권한이 없습니다.');
+      }
+
+      if (!reservation) {
+        throw new CustomError(404, '해당 예약은 찾을 수 없습니다.');
+      }
+      
+      await this.reservationService.deleteReservation(reservationId);
 
       return res.status(201).json({ message: '삭제 완료되었습니다.' });
     } catch (err) {
