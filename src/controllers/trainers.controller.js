@@ -50,7 +50,6 @@ export class TrainerController {
       const { userId } = req.user;
       const { trainerId } = req.params;
       const findTrainer = await this.trainerService.findOneTrainer(trainerId);
-      console.log(findTrainer);
       if (userId === findTrainer.userId) {
         throw new CustomError(400, '자기 자신에게 좋아요를 누를 수 없습니다.');
       }

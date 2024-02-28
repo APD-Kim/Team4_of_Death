@@ -47,8 +47,6 @@ export class TrainerRepository {
 
   /**카테고리별 펫시터 조회 */
   findTrainerByCategory = async (category) => {
-    console.log('findTrainerByCategory');
-    console.log(category);
     const trainerList = await this.prisma.trainers.findMany({
       where: {
         petCategory: category,
@@ -73,7 +71,6 @@ export class TrainerRepository {
         },
       },
     });
-    console.log('trainerList', trainerList);
     return trainerList;
   };
 
@@ -108,7 +105,7 @@ export class TrainerRepository {
     });
     return trainer;
   };
-  
+
 
   cancelLikeTrainer = async (userId, trainerId) => {
     const cancelLike = await this.prisma.likes.delete({

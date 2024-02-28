@@ -43,7 +43,7 @@ export class ReservationController {
   delReservation = async (req, res, next) => {
     try {
       const {userId} = req.user;
-      console.log(userId);
+
       const { reservationId } = req.params;
       if (!reservationId) {
         throw new CustomError(404, '요청이 잘못 되었습니다.');
