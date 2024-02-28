@@ -42,6 +42,29 @@ export class ReservationRepository {
     }
   };
 
+  // 예약 가능한 날짜 찾기
+  findTrainerPossibleReservations = async (trainerId, startDate, endDate) => {
+    const possibleDates = await this.prisma.reservations.findMany({
+      where: {
+        trainerId: +trainerId,
+        AND: [
+          {
+            startDate: {
+              lte: new Date(endDate),
+            },
+          },
+          {
+            endDate: {
+              gte: new Date(startDate),
+            },
+          },
+        ],
+      },
+    });
+    return possibleDates;
+  };
+
+  // 트레이너에 예약 된 날짜 찾기
   findReservationById = async (reservationId) => {
     const findReservations = await this.prisma.reservations.findFirst({
       where: {
@@ -60,20 +83,17 @@ export class ReservationRepository {
     return findReservations;
   };
 
-  // 트래이너의 가능한 날짜 찾기
-  findPossibleDates = async (trainerId) => {
-    const today = new Date();
-    const PossibleDates = await this.prisma.reservations.findMany({
+  findReservationDates = async (trainerId) => {
+    const reservationDates = await this.prisma.reservations.findMany({
       where: {
         trainerId: +trainerId,
-        // startDate: {
-        //   gte: today.toISOString(), //
-        // },
       },
       select: {
         reservationId: true,
         startDate: true,
         endDate: true,
+        createdAt: true,
+        updatedAt: true,
         trainers: {
           select: {
             petCategory: true,
@@ -84,7 +104,7 @@ export class ReservationRepository {
         startDate: 'asc',
       },
     });
-    return PossibleDates;
+    return reservationDates;
   };
 
   updateReservation = async (reservationId, startDate, endDate) => {
