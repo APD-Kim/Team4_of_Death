@@ -7,8 +7,9 @@ const mockReservationService = {
   findReservationDates: jest.fn(),
   findReservationById: jest.fn(),
   updateReservation: jest.fn(),
-  delReservation: jest.fn(),
+  deleteReservation: jest.fn(),
   reserveDate: jest.fn(),
+  findReservationByIdUnique: jest.fn(),
 };
 
 const reservationController = new ReservationController(mockReservationService);
@@ -70,23 +71,28 @@ describe('Reservation Controller Unit Test', () => {
       endDate: '2024-02-25',
     };
     console.log(mockUpdatedReservation);
-
+    const mockFoundValue = {
+      userId: 1,
+    };
     mockReq.params = {
       reservationId: 3,
-    }
+    };
     mockReq.body = {
       startDate: '2024-02-22',
       endDate: '2024-02-25',
     };
-
+    mockReq.user = {
+      userId: 1,
+    };
+    mockReservationService.findReservationByIdUnique.mockResolvedValue(mockFoundValue);
     mockReservationService.updateReservation.mockResolvedValue(mockUpdatedReservation);
 
     await reservationController.putReservation(mockReq, mockRes, mockNext);
-
+    expect(mockReservationService.findReservationByIdUnique).toHaveBeenCalledTimes(1);
     expect(mockReservationService.updateReservation).toHaveBeenCalledWith(
       mockReq.params.reservationId,
       mockReq.body.startDate,
-      mockReq.body.endDate,
+      mockReq.body.endDate
     );
 
     expect(mockRes.status).toHaveBeenCalledWith(201);
@@ -97,18 +103,26 @@ describe('Reservation Controller Unit Test', () => {
   });
 
   test('delReservation Unit Test', async () => {
-    const mockReservationId = 3;
     const mockDeleteReservation = {
       reservationId: 3,
-    }
+    };
+    mockReq.user = {
+      userId: 1,
+    };
+    mockReq.params = {
+      reservationId: 1,
+    };
+    const mockFoundValue = {
+      userId: 1,
+    };
+    mockReservationService.findReservationByIdUnique.mockResolvedValue(mockFoundValue);
     mockReservationService.deleteReservation.mockResolvedValue(mockDeleteReservation);
 
-    const deletedReservation = await reservationController.delReservation(mockReservationId);
+    await reservationController.delReservation(mockReq, mockRes, mockNext);
 
-    expect(mockReservationService.deleteReservation).toHaveBeenCalledWith(mockReservationId);
     expect(mockReservationService.deleteReservation).toHaveBeenCalledTimes(1);
+    expect(mockReservationService.deleteReservation).toHaveBeenCalledWith(mockReq.params.reservationId);
     expect(mockRes.status).toHaveBeenCalledWith(201);
     expect(mockRes.json).toHaveBeenCalledWith({ message: '삭제 완료되었습니다.' });
-    expect(deletedReservation).toEqual(mockDeleteReservation);
   });
 });

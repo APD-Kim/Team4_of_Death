@@ -61,9 +61,10 @@ describe('Trainer Controller Unit Test', () => {
   });
 
   it('findTrainerByCategory Method about no data', async () => {
-    mockRequest.body = { category: 'dog' };
+    mockRequest.params = { category: 'dog' };
+    mockTrainerService.findTrainerByCategory.mockResolvedValue(null);
     await trainerController.findTrainerByCategory(mockRequest, mockResponse, mockNext);
-    expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(0);
+    expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(1);
     expect(mockNext).toHaveBeenCalledWith(new CustomError(400, '해당 카테고리에 조회된 트레이너가 없습니다.'));
   });
 

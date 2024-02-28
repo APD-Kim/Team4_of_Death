@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { prisma } from '../utils/prisma.js';
 
 export class UserRepository {
   constructor(prisma, redis) {

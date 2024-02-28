@@ -7,6 +7,7 @@ const mockUserService = {
   signUp: jest.fn(),
   validUser: jest.fn(),
   signToken: jest.fn(),
+  deleteImage: jest.fn(),
 };
 
 const mockRequest = {
@@ -62,6 +63,7 @@ describe('User Controller Unit Test', () => {
       phoneNumber: '010-1111-1111',
       petCategory: 'cat',
     };
+    mockUserService.deleteImage.mockResolvedValue(null);
     await userController.signUp(mockRequest, mockResponse, mockNext);
     expect(mockUserService.validatePhoneNumber).toHaveBeenCalledTimes(0);
     expect(mockUserService.signUp).toHaveBeenCalledTimes(0);
@@ -79,6 +81,7 @@ describe('User Controller Unit Test', () => {
       petCategory: 'snake',
       profileImg: 'http://test.com',
     };
+    mockUserService.deleteImage.mockResolvedValue(null);
     await userController.signUp(mockRequest, mockResponse, mockNext);
     expect(mockUserService.validatePhoneNumber).toHaveBeenCalledTimes(0);
     expect(mockUserService.signUp).toHaveBeenCalledTimes(0);
@@ -94,9 +97,11 @@ describe('User Controller Unit Test', () => {
       petCategory: 'cat',
       profileImg: 'http://test.com',
     };
+    mockUserService.deleteImage.mockResolvedValue(null);
     await userController.signUp(mockRequest, mockResponse, mockNext);
     expect(mockUserService.validatePhoneNumber).toHaveBeenCalledTimes(0);
     expect(mockUserService.signUp).toHaveBeenCalledTimes(0);
+
     expect(mockNext).toHaveBeenCalledWith(new CustomError(40, '비밀번호를 다시 확인하세요.'));
   });
   it('login method ', async () => {
