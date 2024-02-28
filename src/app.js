@@ -1,29 +1,35 @@
-import express from "express";
-import cookieParser from "cookie-parser";
-import { redisClient } from "./model/redis.js"
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import userRouter from './routes/users.routes.js';
+import reviewRouter from './routes/reviews.routes.js';
+import reservationRouter from './routes/reservations.routes.js';
+import trainersRouter from '../src/routes/trainers.routes.js';
+import pointRouter from '../src/routes/points.routes.js';
 
-import "dotenv/config";
-
-
-
+import 'dotenv/config';
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(redisClient)
+app.use(cookieParser());
 
-//이 위로 app.use()를 넣어주세요
+app.use('/users', userRouter);
+app.use('/reviews', reviewRouter);
+app.use('/trainers', trainersRouter);
+app.use('/reservations', reservationRouter);
+app.use('/points', pointRouter);
+
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  const statusCode = err.statusCode ?? 500;
-  const message = err.message ?? "서버 에러 발생";
+  console.log(err.stack);
+  const status = err.statusCode ?? 500;
+  const message = err.message ?? '서버 에러 발생';
   const boolean = err.boolean ?? false;
-  res.status(statusCode).json({ success: boolean, message: message });
+  res.status(status).json({ success: boolean, message: message });
 });
 
-app.get("/", function (req, res) {
-  res.send("Hello World");
+app.get('/', function (req, res) {
+  res.send('Hello World');
 });
 
 app.listen(process.env.PORT, () => {
