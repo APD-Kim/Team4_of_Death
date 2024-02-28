@@ -50,6 +50,7 @@ describe('User Repository Unit Test', () => {
       name: '김라임',
       phoneNumber: '010-4311-1620',
       petCategory: 'cat',
+      profileImg: 'http://test.com',
     };
     const mockUserCreationResult = { userId: 1, email: 'popcon94062011@gmail.com' };
     const mockPointCreationResult = { pointId: 'some-random-id', userId: 1, point: 1000 };
@@ -61,7 +62,8 @@ describe('User Repository Unit Test', () => {
       findParams.password,
       findParams.name,
       findParams.phoneNumber,
-      findParams.petCategory
+      findParams.petCategory,
+      findParams.profileImg
     );
     expect(result).toEqual({ createdUser: mockUserCreationResult, point: mockPointCreationResult });
     expect(mockPrisma.$transaction).toHaveBeenCalledTimes(1);

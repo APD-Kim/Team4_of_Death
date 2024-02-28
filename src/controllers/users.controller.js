@@ -1,4 +1,12 @@
 import CustomError from '../utils/errorHandler.js';
+import { sendMail } from '../utils/auth.js';
+import { redisClient } from '../model/redis.js';
+import multer from 'multer';
+import multerS3 from 'multer-s3';
+import aws from 'aws-sdk';
+//aws.config.loadFromPath(__dirname + '/../../.env');
+import path from 'path';
+import 'dotenv/config';
 
 export class UserController {
   constructor(userService) {
@@ -7,6 +15,8 @@ export class UserController {
   signUp = async (req, res, next) => {
     try {
       const { email, password, passwordCheck, name, phoneNumber, petCategory } = req.body;
+      let profileImg = '';
+
       if (!email || !password || !passwordCheck || !name || !phoneNumber || !petCategory) {
         throw new CustomError(400, '요청이 잘못 되었습니다.');
       }
@@ -16,14 +26,22 @@ export class UserController {
       if (password !== passwordCheck) {
         throw new CustomError(400, '비밀번호를 다시 확인하세요.');
       }
+
+      if (!req.file || req.file.location.length == 0) {
+        profileImg = 'https://mybucket-s3-test99.s3.ap-northeast-2.amazonaws.com/imgStorage/defaultUser.png';
+      } else {
+        profileImg = req.file.location;
+      }
+
       await this.userService.validatePhoneNumber(phoneNumber);
-      const signedUser = await this.userService.signUp(email, password, name, phoneNumber, petCategory);
+      const signedUser = await this.userService.signUp(email, password, name, phoneNumber, petCategory, profileImg);
 
       res.status(201).json({ message: '회원가입 완료', data: signedUser });
     } catch (err) {
       next(err);
     }
   };
+
   logIn = async (req, res, next) => {
     try {
       const { email, password } = req.body;
@@ -60,5 +78,117 @@ export class UserController {
     //리프레시 토큰이 있다면
 
     res.status(200).json({ message: refreshToken });
+  };
+
+  // 노드메일러 인증코드 전송
+  // ../utils/auth.js에 sendMail 정의 되어 있습니다.
+  sendEmailVerification = async (req, res, next) => {
+    try {
+      const { email } = req.params;
+      if (!email) {
+        throw new CustomError(400, '이메일 주소를 입력하세요.');
+      }
+
+      const verificationCode = Math.random().toString(36).substring(7);
+      await sendMail(email, verificationCode);
+
+      res.status(200).json({ message: '이메일로 인증 코드가 전송되었습니다.' });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // 노드메일러 인증코드 확인
+  verifyEmail = async (req, res, next) => {
+    try {
+      const { email, code } = req.body;
+      if (!email || !code) {
+        throw new CustomError(400, '이메일과 코드를 모두 제공해주세요.');
+      }
+      const cashedCode = await new Promise((resolve, reject) => {
+        redisClient.get(email, (err, cashedCode) => {
+          if (err) {
+            reject(new CustomError(500, 'Redis에서 인증 코드 가져오는 중 오류가 발생했습니다.'));
+          }
+          resolve(cashedCode);
+        });
+      });
+      if (!cashedCode || code !== cashedCode) {
+        throw new CustomError(400, '인증 코드가 일치하지 않습니다.');
+      }
+      await this.userService.verifyEmail(email, code); // 이메일과 코드를 함께 전달
+      res.status(200).json({ message: '인증이 성공적으로 완료되었습니다.' });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  /** 사용자 이미지 업로드 */
+  uploadImage = async (req, res, next) => {
+    try {
+      const postImage = req.file;
+      const postBody = req.body;
+
+      console.log(postImage);
+      console.log(postBody);
+
+      if (!postImage) {
+        throw new CustomError(400, '이미지 파일이 존재하지 않습니다.');
+      }
+
+      //const imageName = postImage.originalname;
+      const userId = postBody.userId;
+      const imageURL = postImage.location;
+
+      if (!userId || imageURL === undefined) {
+        throw new CustomError(400, '이미지 정보가 존재하지 않습니다.');
+      }
+
+      const uploadImage = await this.userService.uploadImage(userId, imageURL);
+
+      console.log(uploadImage);
+      if (!uploadImage) {
+        throw new CustomError(400, '이미지 DB저장에 실패하였습니다.');
+      }
+
+      res.status(201).json({ message: '이미지 업로드 완료', data: postImage });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  /** 사용자 이미지-게시글 업로드 */
+
+  /** 사용자 이미지 조회 */
+  showImage = async (req, res, next) => {
+    try {
+      res.render(upload);
+      //res.sendFile(path.join(__dirname, 'multipart.html')); // get요청 시, html띄우기
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  /** 사용자 이미지 수정 */
+  updateImage = async (req, res, next) => {
+    try {
+      //res.render('upload');
+      res.sendFile(path.join(__dirname, 'multipart.html'));
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  /** 사용자 이미지 삭제 */
+  deleteImage = async (req, res, next) => {
+    try {
+      s3.deleteObject({
+        bucket: 'mybucket-s3-test99',
+        key: req.file.originalname,
+      });
+      res.sendFile(path.join(__dirname, 'multipart.html'));
+    } catch (err) {
+      next(err);
+    }
   };
 }

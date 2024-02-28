@@ -41,6 +41,7 @@ describe('User Controller Unit Test', () => {
       name: '김라임',
       phoneNumber: '010-1111-1111',
       petCategory: 'cat',
+      profileImg: 'http://test.com',
     };
     mockUserService.validatePhoneNumber.mockResolvedValue('010-1111-1111');
     mockUserService.signUp.mockResolvedValue(mockReturn);
@@ -57,6 +58,7 @@ describe('User Controller Unit Test', () => {
       name: '김라임',
       phoneNumber: '010-1111-1111',
       petCategory: 'cat',
+      profileImg: 'http://test.com',
     };
     await userController.signUp(mockRequest, mockResponse, mockNext);
     expect(mockUserService.validatePhoneNumber).toHaveBeenCalledTimes(0);
@@ -71,6 +73,7 @@ describe('User Controller Unit Test', () => {
       name: '김라임',
       phoneNumber: '010-1111-1111',
       petCategory: 'snake',
+      profileImg: 'http://test.com',
     };
     await userController.signUp(mockRequest, mockResponse, mockNext);
     expect(mockUserService.validatePhoneNumber).toHaveBeenCalledTimes(0);
@@ -85,6 +88,7 @@ describe('User Controller Unit Test', () => {
       name: '김라임',
       phoneNumber: '010-1111-1111',
       petCategory: 'cat',
+      profileImg: 'http://test.com',
     };
     await userController.signUp(mockRequest, mockResponse, mockNext);
     expect(mockUserService.validatePhoneNumber).toHaveBeenCalledTimes(0);

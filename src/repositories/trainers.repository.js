@@ -47,11 +47,12 @@ export class TrainerRepository {
 
   /**카테고리별 펫시터 조회 */
   findTrainerByCategory = async (category) => {
+    console.log('findTrainerByCategory');
+    console.log(category);
     const trainerList = await this.prisma.trainers.findMany({
       where: {
         petCategory: category,
       },
-
       select: {
         userId: true,
         career: true,
@@ -72,6 +73,7 @@ export class TrainerRepository {
         },
       },
     });
+    console.log('trainerList', trainerList);
     return trainerList;
   };
 
@@ -142,5 +144,28 @@ export class TrainerRepository {
       },
     });
     return trainer;
+  };
+
+  findTrainersNoDate = async (startTime, endTime) => {
+    const noReservation = await this.prisma.trainers.findMany({
+      where: {
+        NOT: {
+          reservations: {
+            some: {
+              AND: [{ startDate: { lte: endTime } }, { endDate: { gte: startTime } }],
+            },
+          },
+        },
+      },
+      select: {
+        trainerId: true,
+        users: { select: { name: true } },
+        petCategory: true,
+        price: true,
+        career: true,
+      },
+    });
+
+    return noReservation;
   };
 }
