@@ -32,7 +32,7 @@ export class TrainerController {
     try {
       const { trainerId } = req.params;
       if (!trainerId) {
-        throw new CustomError(404, 'trainer 아이디가 올바르지 않습니다..');
+        throw new CustomError(404, 'trainer 아이디가 올바르지 않습니다.');
       }
 
       const trainer = await this.trainerService.findOneTrainer(trainerId);

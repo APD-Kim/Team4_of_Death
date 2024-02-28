@@ -22,6 +22,8 @@ const userController = new UserController(userService);
 router.post('/sign-up', upload.single('profileImage'), userController.signUp);
 router.post('/login', userController.logIn);
 router.post('/refresh', authJwt, userController.issueRefreshToken);
+router.get('/verification/:email', userController.sendEmailVerification);
+router.post('/verification', userController.verifyEmail);
 
 //3. 싱글이미지 파일 업로드(라우터)
 router.post('/upload-image', upload.single('profileImage'), userController.uploadImage);

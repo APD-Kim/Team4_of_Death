@@ -50,10 +50,10 @@ export class TrainerRepository {
     console.log('findTrainerByCategory');
     console.log(category);
     const trainerList = await this.prisma.trainers.findMany({
+      where: {
+        petCategory: category,
+      },
       select: {
-        where: {
-          petCategory: category,
-        },
         userId: true,
         career: true,
         petCategory: true,
