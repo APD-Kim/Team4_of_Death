@@ -7,7 +7,8 @@ const mockReservationService = {
   findReservationDates: jest.fn(),
   findReservationById: jest.fn(),
   updateReservation: jest.fn(),
-  deleteReservation: jest.fn(),
+  delReservation: jest.fn(),
+  reserveDate: jest.fn(),
 };
 
 const reservationController = new ReservationController(mockReservationService);
@@ -29,6 +30,21 @@ describe('Reservation Controller Unit Test', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     mockRes.status.mockReturnValue(mockRes);
+  });
+  test('reserveTrainer method by success', async () => {
+    mockReq.user = {
+      userId: 1,
+    };
+    mockReq.body = {
+      trainerId: 1,
+      startDate: '2024-02-22',
+      endDate: '2024-02-25',
+    };
+    const mockReturn = 'complete String';
+    mockReservationService.reserveDate.mockResolvedValue(mockReturn);
+    await reservationController.reserveTrainer(mockReq, mockRes, mockNext);
+    expect(mockRes.status).toHaveBeenCalledWith(201);
+    expect(mockRes.json).toHaveBeenCalledWith({ message: '성공적으로 예약이 완료되었습니다.', data: mockReturn });
   });
 
   test('getDates method test', async () => {

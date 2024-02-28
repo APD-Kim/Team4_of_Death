@@ -3,7 +3,7 @@ export class ReviewRepository {
     this.prisma = prisma;
   }
 
-  createReview = async (trainerId, userId, content, rating) => {
+  createReview = async (userId, trainerId, content, rating) => {
     const review = await this.prisma.reviews.create({
       data: {
         userId: +userId,

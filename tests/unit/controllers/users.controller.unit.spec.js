@@ -49,7 +49,10 @@ describe('User Controller Unit Test', () => {
     expect(mockUserService.validatePhoneNumber).toHaveBeenCalledTimes(1);
     expect(mockUserService.signUp).toHaveBeenCalledTimes(1);
     expect(mockResponse.status).toHaveBeenCalledWith(201);
-    expect(mockResponse.json).toHaveBeenCalledWith({ message: '회원가입 완료', data: mockReturn });
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      message: '회원가입이 완료되었습니다. 이메일로 전송된 인증코드를 입력하고 이메일 인증을 완료하세요.',
+      data: mockReturn,
+    });
   });
   it('signUp method about invalid arguments', async () => {
     mockRequest.body = {

@@ -64,7 +64,8 @@ export class ReservationController {
 
   delReservation = async (req, res, next) => {
     try {
-      const { userId } = req.user;
+      const {userId} = req.user;
+
       const { reservationId } = req.params;
 
       if (!reservationId || !userId) {

@@ -6,7 +6,6 @@ import { ReservationRepository } from '../repositories/reservations.repository.j
 import { authJwt } from '../middlewares/auth.middleware.js';
 import { TrainerRepository } from '../repositories/trainers.repository.js';
 import { PointRepository } from '../repositories/points.repository.js';
-import { verifiedEmail } from '../middlewares/verifiedEmail.middleware.js';
 
 const reservationRepository = new ReservationRepository(prisma);
 const trainerRepository = new TrainerRepository(prisma);

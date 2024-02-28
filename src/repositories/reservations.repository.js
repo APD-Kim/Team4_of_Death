@@ -17,7 +17,7 @@ export class ReservationRepository {
     return reserve;
   };
 
-  searchDates = async (trainerId, startDate, endDate) => {
+  isReservatedDate = async (trainerId, startDate, endDate) => {
     const findDates = await this.prisma.reservations.findMany({
       where: {
         trainerId: Number(trainerId),
@@ -35,7 +35,11 @@ export class ReservationRepository {
         ],
       },
     });
-    return findDates;
+    if (findDates.length === 0) {
+      return false;
+    } else {
+      return true;
+    }
   };
 
   // 예약 가능한 날짜 찾기
