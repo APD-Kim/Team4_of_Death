@@ -7,12 +7,15 @@ export class TrainerController {
 
   registerTrainer = async (req, res, next) => {
     try {
-      const { userId, price, career, petCategory, address } = req.body;
-      if (!userId || !price || !career || !petCategory || !address) {
+      const { userId } = req.user;
+      const { price, career, petCategory, address } = req.body;
+
+      if (!price || !career || !petCategory || !address) {
         throw new CustomError(404, '형식이 맞지 않습니다.');
       }
 
       const trainer = await this.trainerService.registerTrainer(userId, price, career, petCategory, address);
+
       return res.status(202).json({ message: trainer });
     } catch (err) {
       next(err);
@@ -43,18 +46,22 @@ export class TrainerController {
   };
 
   likesTrainer = async (req, res, next) => {
-    const { userId } = req.user;
-    const { trainerId } = req.params;
-    const findTrainer = await this.trainerService.findOneTrainer(trainerId);
-    console.log(findTrainer);
-    if (userId === findTrainer.userId) {
-      throw new CustomError(400, '자기 자신에게 좋아요를 누를 수 없습니다.');
+    try {
+      const { userId } = req.user;
+      const { trainerId } = req.params;
+      const findTrainer = await this.trainerService.findOneTrainer(trainerId);
+      console.log(findTrainer);
+      if (userId === findTrainer.userId) {
+        throw new CustomError(400, '자기 자신에게 좋아요를 누를 수 없습니다.');
+      }
+      const likeTrainer = await this.trainerService.likeTrainer(userId, trainerId);
+      if (likeTrainer.status === 'cancelLiked') {
+        return res.status(201).json({ message: '성공적으로 좋아요를 취소했습니다.' });
+      }
+      res.status(201).json({ message: '성공적으로 좋아요를 눌렀습니다.' });
+    } catch (err) {
+      next(err);
     }
-    const likeTrainer = await this.trainerService.LikeTrainer(userId, trainerId);
-    if (likeTrainer.status === 'cancelLiked') {
-      return res.status(201).json({ message: '성공적으로 좋아요를 취소했습니다.' });
-    }
-    res.status(201).json({ message: '성공적으로 좋아요를 눌렀습니다.' });
   };
 
   /**카테고리별 펫시터 조회 */

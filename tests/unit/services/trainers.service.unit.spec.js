@@ -10,6 +10,9 @@ const mockTrainerRepository = {
   updateTrainer: jest.fn(),
   deleteTrainer: jest.fn(),
   findTrainerByCategory: jest.fn(),
+  existLike: jest.fn(),
+  likeTrainer: jest.fn(),
+  cancelLikeTrainer: jest.fn(),
 };
 
 // const mockRequest = {
@@ -38,20 +41,17 @@ describe('Trainer Service Unit Test', () => {
 
   it('findTrainerByCategory Method Success', async () => {
     const mockReturn = 'findTrainerByCategory complete';
-    mockRequest.body = { category: 'dog' };
     mockTrainerRepository.findTrainerByCategory.mockResolvedValue(mockReturn);
-    const trainerList = await trainerService.findTrainerByCategory(mockRequest, mockResponse, mockReturn);
+    const trainerList = await trainerService.findTrainerByCategory('dog');
     expect(trainerList).toEqual(mockReturn);
     expect(mockTrainerRepository.findTrainerByCategory).toHaveBeenCalledTimes(1);
-    expect(mockTrainerRepository.findTrainerByCategory).toHaveBeenCalledWith(mockRequest);
+    expect(mockTrainerRepository.findTrainerByCategory).toHaveBeenCalledWith('dog');
   });
   it('findTrainerByCategory Method about null data', async () => {
     const mockReturn = null;
-    mockRequest.body = { category: 'dog' };
-
     try {
       mockTrainerRepository.findTrainerByCategory.mockResolvedValue(mockReturn);
-      const trainerList = await trainerService.findTrainerByCategory(mockRequest, mockResponse, mockNext);
+      const trainerList = await trainerService.findTrainerByCategory('dog');
     } catch (err) {
       expect(err).toBeInstanceOf(CustomError);
       expect(err.message).toEqual('해당 카테고리내 트레이너가 존재하지 않습니다.');
@@ -122,5 +122,65 @@ describe('Trainer Service Unit Test', () => {
     const deleteTrainerData = await trainerService.deleteTrainer();
     expect(deleteTrainerData).toEqual(mockReturn);
     expect(mockTrainerRepository.deleteTrainer).toHaveBeenCalledTimes(1);
+  });
+  it('likesTrainer  Success if did not like to trainer yet', async () => {
+    const mockReturn = 'like Completed';
+    const mockParams = {
+      userId: 1,
+      trainerId: 3,
+    };
+    const returnValue = {
+      status: 'liked',
+    };
+    mockTrainerRepository.existLike.mockResolvedValue(null);
+    mockTrainerRepository.likeTrainer.mockResolvedValue(mockReturn);
+    const likedData = await trainerService.likeTrainer(mockParams.userId, mockParams.trainerId);
+    expect(likedData).toEqual(returnValue);
+    expect(mockTrainerRepository.existLike).toHaveBeenCalledTimes(1);
+    expect(mockTrainerRepository.existLike).toHaveBeenCalledWith(mockParams.userId, mockParams.trainerId);
+    expect(mockTrainerRepository.likeTrainer).toHaveBeenCalledTimes(1);
+    expect(mockTrainerRepository.likeTrainer).toHaveBeenCalledWith(mockParams.userId, mockParams.trainerId);
+  });
+  it('likesTrainer  Success if already liked trainer', async () => {
+    const mockReturn = 'cancel like Completed';
+    const mockFindLikeValue = 'searched Liked Data';
+    const mockParams = {
+      userId: 1,
+      trainerId: 3,
+    };
+    const returnValue = {
+      status: 'cancelLiked',
+    };
+    mockTrainerRepository.existLike.mockResolvedValue(mockFindLikeValue);
+    mockTrainerRepository.cancelLikeTrainer.mockResolvedValue(mockReturn);
+    const likedData = await trainerService.likeTrainer(mockParams.userId, mockParams.trainerId);
+    expect(likedData).toEqual(returnValue);
+    expect(mockTrainerRepository.existLike).toHaveBeenCalledTimes(1);
+    expect(mockTrainerRepository.existLike).toHaveBeenCalledWith(mockParams.userId, mockParams.trainerId);
+    expect(mockTrainerRepository.cancelLikeTrainer).toHaveBeenCalledTimes(1);
+    expect(mockTrainerRepository.cancelLikeTrainer).toHaveBeenCalledWith(mockParams.userId, mockParams.trainerId);
+  });
+  it('likesTrainer failed by database error', async () => {
+    const mockReturn = null;
+    const mockParams = {
+      userId: 1,
+      trainerId: 3,
+    };
+    const returnValue = {
+      status: 'cancelLiked',
+    };
+    try {
+      mockTrainerRepository.existLike.mockResolvedValue(null);
+      mockTrainerRepository.likeTrainer.mockResolvedValue(mockReturn);
+      const likedData = await trainerService.likeTrainer(mockParams.userId, mockParams.trainerId);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('좋아요 생성중 오류가 발생했습니다.');
+      expect(err.statusCode).toEqual(500);
+    }
+    expect(mockTrainerRepository.existLike).toHaveBeenCalledTimes(1);
+    expect(mockTrainerRepository.existLike).toHaveBeenCalledWith(mockParams.userId, mockParams.trainerId);
+    expect(mockTrainerRepository.likeTrainer).toHaveBeenCalledTimes(1);
+    expect(mockTrainerRepository.likeTrainer).toHaveBeenCalledWith(mockParams.userId, mockParams.trainerId);
   });
 });

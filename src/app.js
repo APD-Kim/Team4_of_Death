@@ -5,7 +5,6 @@ import reviewRouter from './routes/reviews.routes.js';
 import reservationRouter from './routes/reservations.routes.js';
 import trainersRouter from '../src/routes/trainers.routes.js';
 import pointRouter from '../src/routes/points.routes.js';
-
 import CustomError from './utils/errorHandler.js';
 import 'dotenv/config';
 
@@ -23,6 +22,7 @@ app.use('/points', pointRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
+  console.error(err.message);
   const statusCode = err.statusCode ?? 500;
   const message = err.message ?? '서버 에러 발생';
   const boolean = err.boolean ?? false;

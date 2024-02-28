@@ -26,19 +26,25 @@ export class UserController {
       if (password !== passwordCheck) {
         throw new CustomError(400, '비밀번호를 다시 확인하세요.');
       }
-
       if (!req.file || req.file.location.length == 0) {
         profileImg = 'https://mybucket-s3-test99.s3.ap-northeast-2.amazonaws.com/imgStorage/defaultUser.png';
       } else {
         profileImg = req.file.location;
       }
-
       await this.userService.validatePhoneNumber(phoneNumber);
       const signedUser = await this.userService.signUp(email, password, name, phoneNumber, petCategory, profileImg);
-
-      res.status(201).json({ message: '회원가입 완료', data: signedUser });
+      const verificationCode = Math.random().toString(36).substring(7);
+      await sendMail(email, verificationCode);
+      res.status(201).json({
+        message: '회원가입이 완료되었습니다. 이메일로 전송된 인증코드를 입력하고 이메일 인증을 완료하세요.',
+        data: signedUser,
+      });
     } catch (err) {
+      if (err.message === `Missing credentials for "PLAIN"`) {
+        err.message = '이메일 전송 중 오류가 발생하였습니다.';
+      }
       next(err);
+    } finally {
     }
   };
 
@@ -50,7 +56,6 @@ export class UserController {
       }
       const user = await this.userService.validUser(email, password);
       const { userId } = user;
-      //이메일과 비밀번호가 일치하는지 확인함
       const tokens = await this.userService.signToken(userId);
       res.cookie('authorization', tokens.bearerToken, {
         httpOnly: true,
@@ -82,18 +87,19 @@ export class UserController {
 
   // 노드메일러 인증코드 전송
   // ../utils/auth.js에 sendMail 정의 되어 있습니다.
-  sendEmailVerification = async (req, res, next) => {
+  reSendAuthenticationCode = async (req, res, next) => {
     try {
       const { email } = req.params;
-      if (!email) {
-        throw new CustomError(400, '이메일 주소를 입력하세요.');
-      }
-
       const verificationCode = Math.random().toString(36).substring(7);
       await sendMail(email, verificationCode);
 
-      res.status(200).json({ message: '이메일로 인증 코드가 전송되었습니다.' });
+      res.status(201).json({
+        message: '인증코드가 재발급 되었습니다.',
+      });
     } catch (err) {
+      if (err.message === `Missing credentials for "PLAIN"`) {
+        err.message = '이메일 전송 중 오류가 발생하였습니다.';
+      }
       next(err);
     }
   };
@@ -129,9 +135,6 @@ export class UserController {
       const postImage = req.file;
       const postBody = req.body;
 
-      console.log(postImage);
-      console.log(postBody);
-
       if (!postImage) {
         throw new CustomError(400, '이미지 파일이 존재하지 않습니다.');
       }
@@ -146,7 +149,6 @@ export class UserController {
 
       const uploadImage = await this.userService.uploadImage(userId, imageURL);
 
-      console.log(uploadImage);
       if (!uploadImage) {
         throw new CustomError(400, '이미지 DB저장에 실패하였습니다.');
       }

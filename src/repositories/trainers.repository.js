@@ -89,14 +89,13 @@ export class TrainerRepository {
     return trainer;
   };
 
-  LikeTrainer = async (userId, trainerId) => {
+  likeTrainer = async (userId, trainerId) => {
     const trainer = await this.prisma.likes.create({
       data: {
         userId: Number(userId),
         trainerId: Number(trainerId),
       },
     });
-    console.log(trainer);
     return trainer;
   };
 
@@ -109,6 +108,7 @@ export class TrainerRepository {
     });
     return trainer;
   };
+  
 
   cancelLikeTrainer = async (userId, trainerId) => {
     const cancelLike = await this.prisma.likes.delete({
@@ -145,6 +145,7 @@ export class TrainerRepository {
     });
     return trainer;
   };
+
 
   findTrainersNoDate = async (startTime, endTime) => {
     const noReservation = await this.prisma.trainers.findMany({
