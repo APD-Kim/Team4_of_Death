@@ -135,6 +135,8 @@ export class TrainerRepository {
   };
 
   deleteTrainer = async (trainerId) => {
+    console.log('deleteTrainer');
+    console.log('trainerId', trainerId);
     const trainer = await this.prisma.trainers.delete({
       where: {
         trainerId: +trainerId,

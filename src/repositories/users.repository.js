@@ -73,9 +73,59 @@ export class UserRepository {
     return updatedUser;
   };
 
+  /** 사용자 로그아웃 */
+  removeToken = async (userId) => {
+    const removeToken = await this.redis.del(`refreshToken:${userId}`);
+    return removeToken;
+  };
+
+  /** 사용자 정보 조회*/
+  findOneUser = async (userId) => {
+    const user = await this.prisma.users.findFirst({
+      where: {
+        userId: +userId,
+      },
+    });
+    const point = await this.prisma.points.findFirst({
+      where: {
+        userId: +userId,
+      },
+    });
+    const result = { user, point };
+    return result;
+  };
+
+  /** 사용자 정보 수정 */
+  updateUser = async (userId, email, password, name, phoneNumber, petCategory, profileImg) => {
+    const user = await this.prisma.users.update({
+      where: {
+        userId: +userId,
+      },
+      data: {
+        email,
+        password,
+        name,
+        phoneNumber,
+        petCategory,
+        profileImg,
+      },
+    });
+    return user;
+  };
+
+  /** 사용자 정보 삭제 */
+  deleteUser = async (userId) => {
+    const user = await this.prisma.users.delete({
+      where: {
+        userId: +userId,
+      },
+    });
+
+    return user;
+  };
+
   /** 사용자 이미지 업로드 */
   uploadImage = async (userId, imageURL) => {
-
     const result = await this.prisma.$transaction(async (prisma) => {
       const uploadImage = await prisma.users.update({
         where: {
@@ -89,13 +139,4 @@ export class UserRepository {
     });
     return result;
   };
-
-  /** 사용자 이미지 조회 */
-  showImage = async () => {};
-
-  /** 사용자 이미지 수정 */
-  updateImage = async () => {};
-
-  /** 사용자 이미지 삭제 */
-  deleteImage = async () => {};
 }

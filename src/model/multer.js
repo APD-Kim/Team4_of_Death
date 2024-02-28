@@ -1,7 +1,6 @@
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import AWS from 'aws-sdk';
-//aws.config.loadFromPath(__dirname + '/../../.env');
 import path from 'path';
 import 'dotenv/config';
 
@@ -18,7 +17,7 @@ AWS.config.update({
   region: 'ap-northeast-2',
 });
 
-const s3 = new AWS.S3();
+export const s3 = new AWS.S3();
 
 /** upload 함수 실행 시, 설정한 이름의 Bucket에 파일 업로드
  * 설정한 upload 객체를 라우터에 장착함.
@@ -58,6 +57,14 @@ export const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },      // Limits : 파일개수, 파일 사이즈 제한 → 5메가 제한 설정함
   */
 });
+
+// export const deleteImage = multer({
+//   storage: multerS3({
+//     s3: s3.deleteObject(),
+//     bucket: 'mybucket-s3-test99', //삭제할 이미지가 존재하는 버킷명
+//     key: 'imgStorage/',
+//   }),
+// });
 
 /* upload 객체 변수에 미들웨어 존재 → single 미들웨어(파일 1개 업로드) 사용
    * 이미지 업로드는 특정 라우터만 사용하므로 app.use()에는 사용x 
