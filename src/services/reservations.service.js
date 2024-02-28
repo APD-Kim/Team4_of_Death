@@ -31,8 +31,8 @@ export class ReservationService {
     const { price } = trainer;
     const daysDiff = Math.round((end - start) / (1000 * 60 * 60 * 24) + 1);
     const totalPrice = daysDiff * price;
-    const possibleDates = await this.reservationRepository.searchDates(trainerId, startDate, endDate);
-    if (possibleDates.length !== 0) throw new CustomError(409, '이미 예약되어있습니다.');
+    const possibleDates = await this.reservationRepository.isReservatedDate(trainerId, startDate, endDate);
+    if (possibleDates === true) throw new CustomError(409, '이미 예약되어있습니다.');
     if (daysDiff > 7) throw new CustomError(400, '7일 이상 예약할 수 없습니다.');
     //예약이 없다면 예약을 시켜줘야함
     if (totalPrice > userPoint) {
@@ -44,7 +44,15 @@ export class ReservationService {
     const status = 'RESERVE';
     const adjustment = 'decrement';
     const subPoint = await this.pointRepository.calculatePoint(userId, totalPrice, status, adjustment);
-    return { reservedDate, subPoint };
+    return {
+      trainerId: reservedDate.trainerId,
+      startDate: reservedDate.startDate,
+      endDate: reservedDate.endDate,
+      status: reservedDate.status,
+      createdAt: reservedDate.createdAt,
+      currentPoint: subPoint.updatedResultPoint.point,
+      totalPrice: subPoint.createdHistory.pointChanged,
+    };
   };
 
   findPossibleDates = async (trainerId) => {

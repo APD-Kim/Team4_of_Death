@@ -6,7 +6,6 @@ import { ReservationRepository } from '../repositories/reservations.repository.j
 import { authJwt } from '../middlewares/auth.middleware.js';
 import { TrainerRepository } from '../repositories/trainers.repository.js';
 import { PointRepository } from '../repositories/points.repository.js';
-import { verifiedEmail } from '../middlewares/verifiedEmail.middleware.js';
 
 const reservationRepository = new ReservationRepository(prisma);
 const trainerRepository = new TrainerRepository(prisma);
@@ -17,7 +16,7 @@ const reservationController = new ReservationController(reservationService);
 const router = express.Router();
 
 router.post('/', authJwt, reservationController.reserveTrainer);
-router.get('/', authJwt, verifiedEmail ,reservationController.getDates);
+router.get('/', authJwt, reservationController.getDates);
 router.put('/:reservationId', reservationController.putReservation);
 router.delete('/:reservationId', reservationController.delReservation);
 

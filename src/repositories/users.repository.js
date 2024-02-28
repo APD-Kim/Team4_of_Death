@@ -64,7 +64,7 @@ export class UserRepository {
   verifyEmailUpdate = async (email) => {
     const updatedUser = await this.prisma.users.update({
       where: {
-        email: email,
+        email,
       },
       data: {
         isVerified: true,
@@ -72,7 +72,7 @@ export class UserRepository {
     });
     return updatedUser;
   };
-  
+
   /** 사용자 이미지 업로드 */
   uploadImage = async (userId, imageURL) => {
     console.log('userId', userId);

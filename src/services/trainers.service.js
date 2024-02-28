@@ -37,7 +37,7 @@ export class TrainerService {
     return trainer;
   };
 
-  LikeTrainer = async (userId, trainerId) => {
+  likeTrainer = async (userId, trainerId) => {
     const findLike = await this.trainerRepository.existLike(userId, trainerId);
     if (findLike) {
       await this.trainerRepository.cancelLikeTrainer(userId, trainerId);
@@ -45,9 +45,9 @@ export class TrainerService {
         status: 'cancelLiked',
       };
     }
-    const liked = await this.trainerRepository.LikeTrainer(userId, trainerId);
+    const liked = await this.trainerRepository.likeTrainer(userId, trainerId);
     if (!liked) {
-      throw new CustomError(400, '좋아요 생성중 오류가 발생했습니다.');
+      throw new CustomError(500, '좋아요 생성중 오류가 발생했습니다.');
     }
     return {
       status: 'liked',

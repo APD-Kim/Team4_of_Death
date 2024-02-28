@@ -73,14 +73,29 @@ export class UserService {
       bearerRefreshToken,
     };
   };
-  
+  sendEmailVerification = async (email) => {
+    try {
+      const { email } = req.params;
+      if (!email) {
+        throw new CustomError(400, '이메일 주소를 입력하세요.');
+      }
+
+      const verificationCode = Math.random().toString(36).substring(7);
+      await sendMail(email, verificationCode);
+
+      res.status(200).json({ message: '이메일로 인증 코드가 전송되었습니다.' });
+    } catch (err) {
+      next(err);
+    }
+  };
+
   verifyEmail = async (email) => {
     const user = await this.userRepository.findUserByEmail(email);
     if (!user) {
       throw new CustomError(404, '사용자를 찾을 수 없습니다.');
     }
     await this.userRepository.verifyEmailUpdate(email); // 이메일 인증 상태를 업데이트
-  }
+  };
 
   /** 사용자 이미지 업로드 */
   uploadImage = async (userId, imageURL) => {

@@ -14,7 +14,6 @@ export class PointController {
       if (adjustment && !['increment', 'decrement'].includes(adjustment.toLowerCase())) {
         throw new CustomError(400, '적절하지 않은 형식입니다.');
       }
-      console.log(status);
       status = status.toUpperCase();
       adjustment = adjustment.toLowerCase();
       const caclulatedPoint = await this.pointService.calculateUserPoint(userId, point, status, adjustment);

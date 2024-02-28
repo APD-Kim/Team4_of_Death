@@ -20,19 +20,33 @@ describe('User Service Unit Test', () => {
   });
 
   test('calculateUserPoint method by success', async () => {
-    const returnValue = 'result return value string';
     const params = {
       userId: 1,
       point: 3000,
       status: 'FILL',
       adjustment: 'increment',
     };
-    mockUserRepository.findUserByUserId.mockResolvedValue('found User');
-    mockPointRepository.calculatePoint.mockResolvedValue(returnValue);
+    const resultValue = {
+      updatedResultPoint: {
+        point: 300,
+        pointId: 1,
+        createdAt: 'now',
+      },
+      createdHistory: {
+        status: 'FILL',
+        pointChanged: 500,
+        createdAt: 'now',
+      },
+    };
+    const returnValue = {
+      point: 300,
+      status: 'FILL',
+      pointChanged: 500,
+      createdAt: 'now',
+    };
+    mockPointRepository.calculatePoint.mockResolvedValue(resultValue);
     const result = await pointService.calculateUserPoint(params.userId, params.point, params.status, params.adjustment);
     expect(result).toEqual(returnValue);
-    expect(mockUserRepository.findUserByUserId).toHaveBeenCalledTimes(1);
-    expect(mockUserRepository.findUserByUserId).toHaveBeenCalledWith(params.userId);
     expect(mockPointRepository.calculatePoint).toHaveBeenCalledTimes(1);
     expect(mockPointRepository.calculatePoint).toHaveBeenCalledWith(
       params.userId,
@@ -42,9 +56,12 @@ describe('User Service Unit Test', () => {
     );
   });
   test('showUserPoint method by success', async () => {
-    const returnValue = 'searched point';
     const params = {
       userId: 1,
+    };
+    const returnValue = {
+      point: 300,
+      updatedAt: 'updated',
     };
     mockPointRepository.searchPoint.mockResolvedValue(returnValue);
     const result = await pointService.showUserPoint(params.userId);
@@ -81,29 +98,6 @@ describe('User Service Unit Test', () => {
     expect(mockPointRepository.searchPointHistory).toHaveBeenCalledTimes(1);
     expect(mockPointRepository.searchPointHistory).toHaveBeenCalledWith(3, params.orderBy);
     expect(result).toEqual(returnValue);
-  });
-  test('calculateUserPoint method failed by cannot find user', async () => {
-    const params = {
-      userId: 1,
-      point: 3000,
-      status: 'FILL',
-      adjustment: 'increment',
-    };
-    try {
-      mockUserRepository.findUserByUserId.mockResolvedValue(null);
-      const result = await pointService.calculateUserPoint(
-        params.userId,
-        params.point,
-        params.status,
-        params.adjustment
-      );
-    } catch (err) {
-      expect(err).toBeInstanceOf(CustomError);
-      expect(err.message).toEqual('해당 유저를 찾을 수 없습니다.');
-      expect(err.statusCode).toEqual(404);
-    }
-    expect(mockUserRepository.findUserByUserId).toHaveBeenCalledTimes(1);
-    expect(mockPointRepository.calculatePoint).toHaveBeenCalledTimes(0);
   });
   test('showPointHistory method failed by invalid orderBy value', async () => {
     const params = {

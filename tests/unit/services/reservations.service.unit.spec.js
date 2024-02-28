@@ -11,7 +11,7 @@ const mockReservationRepository = {
   update: jest.fn(),
   deleteReservation: jest.fn(),
   reserveDate: jest.fn(),
-  searchDates: jest.fn(),
+  isReservatedDate: jest.fn(),
 };
 const mockTrainerRepository = {
   findOneTrainer: jest.fn(),
@@ -64,7 +64,6 @@ describe('Reservation Service Unit Test', () => {
     expect(mockReservationRepository.findPossibleDates).toHaveBeenCalledTimes(1);
     expect(mockReservationRepository.findPossibleDates).toHaveBeenCalledWith(1);
   });
-
   test('findReservationById Method Success', async () => {
     const compareReservationId = 1;
 
@@ -142,14 +141,37 @@ describe('Reservation Service Unit Test', () => {
     const findOneTrainerReturnValue = {
       price: 300,
     };
+
     const searchDatesReturnValue = [];
-    const reserveDateReturnValue = 'reserve completed';
-    const calculatePointReturnValue = 'point calculated';
+    const reservedDateReturnValue = {
+      trainerId: 1,
+      startDate: '2024-04-20T00:00:00.000Z',
+      endDate: '2024-04-20T23:59:59.000Z',
+      status: 'STANDBY',
+      createdAt: '2024-02-28T08:24:37.596Z',
+    };
+    const subPointValue = {
+      updatedResultPoint: {
+        point: 5500,
+      },
+      createdHistory: {
+        pointChanged: 300,
+      },
+    };
+    const returnValue = {
+      trainerId: 1,
+      startDate: '2024-04-20T00:00:00.000Z',
+      endDate: '2024-04-20T23:59:59.000Z',
+      status: 'STANDBY',
+      createdAt: '2024-02-28T08:24:37.596Z',
+      currentPoint: 5500,
+      totalPrice: 300,
+    };
     mockPointRepository.searchPoint.mockResolvedValue(searchPointReturnValue);
     mockTrainerRepository.findOneTrainer.mockResolvedValue(findOneTrainerReturnValue);
-    mockReservationRepository.searchDates.mockResolvedValue(searchDatesReturnValue);
-    mockReservationRepository.reserveDate.mockResolvedValue(reserveDateReturnValue);
-    mockPointRepository.calculatePoint.mockResolvedValue(calculatePointReturnValue);
+    mockReservationRepository.isReservatedDate.mockResolvedValue(searchDatesReturnValue);
+    mockReservationRepository.reserveDate.mockResolvedValue(reservedDateReturnValue);
+    mockPointRepository.calculatePoint.mockResolvedValue(subPointValue);
     const result = await reservationService.reserveDate(
       params.userId,
       params.trainerId,
@@ -160,8 +182,8 @@ describe('Reservation Service Unit Test', () => {
     expect(mockPointRepository.searchPoint).toHaveBeenCalledWith(params.userId);
     expect(mockTrainerRepository.findOneTrainer).toHaveBeenCalledTimes(1);
     expect(mockTrainerRepository.findOneTrainer).toHaveBeenCalledWith(params.trainerId);
-    expect(mockReservationRepository.searchDates).toHaveBeenCalledTimes(1);
-    expect(mockReservationRepository.searchDates).toHaveBeenCalledWith(
+    expect(mockReservationRepository.isReservatedDate).toHaveBeenCalledTimes(1);
+    expect(mockReservationRepository.isReservatedDate).toHaveBeenCalledWith(
       params.trainerId,
       params.startDate,
       params.endDate
@@ -175,7 +197,7 @@ describe('Reservation Service Unit Test', () => {
     );
     expect(mockPointRepository.calculatePoint).toHaveBeenCalledTimes(1);
     expect(mockPointRepository.calculatePoint).toHaveBeenCalledWith(params.userId, 600, 'RESERVE', 'decrement');
-    expect(result).toEqual({ reservedDate: reserveDateReturnValue, subPoint: calculatePointReturnValue });
+    expect(result).toEqual(returnValue);
   });
   test('reserveDate method failed by invalid dates', async () => {
     const params = {
@@ -234,11 +256,12 @@ describe('Reservation Service Unit Test', () => {
     try {
       mockPointRepository.searchPoint.mockResolvedValue({ point: 3000 });
       mockTrainerRepository.findOneTrainer.mockResolvedValue({ price: 300 });
-      mockReservationRepository.searchDates.mockResolvedValue(['reserved', 'reserved']);
+      mockReservationRepository.isReservatedDate.mockResolvedValue(true);
       await reservationService.reserveDate(params.userId, params.trainerId, params.startDate, params.endDate);
     } catch (err) {
-      expect(err).toBeInstanceOf(CustomError);
+      console.log(err.stack);
       expect(err.message).toEqual('이미 예약되어있습니다.');
+      expect(err).toBeInstanceOf(CustomError);
       expect(err.statusCode).toEqual(409);
     }
   });
@@ -247,12 +270,12 @@ describe('Reservation Service Unit Test', () => {
       userId: 1,
       trainerId: 2,
       startDate: '2025-11-12',
-      endDate: '2025-11-13',
+      endDate: '2025-11-30',
     };
     try {
       mockPointRepository.searchPoint.mockResolvedValue({ point: 3000 });
       mockTrainerRepository.findOneTrainer.mockResolvedValue({ price: 300 });
-      mockReservationRepository.searchDates.mockResolvedValue([]);
+      mockReservationRepository.isReservatedDate.mockResolvedValue(false);
       await reservationService.reserveDate(params.userId, params.trainerId, params.startDate, params.endDate);
     } catch (err) {
       expect(err).toBeInstanceOf(CustomError);
@@ -265,12 +288,12 @@ describe('Reservation Service Unit Test', () => {
       userId: 1,
       trainerId: 2,
       startDate: '2025-11-12',
-      endDate: '2025-11-13',
+      endDate: '2025-11-15',
     };
     try {
       mockPointRepository.searchPoint.mockResolvedValue({ point: 0 });
       mockTrainerRepository.findOneTrainer.mockResolvedValue({ price: 300 });
-      mockReservationRepository.searchDates.mockResolvedValue([]);
+      mockReservationRepository.isReservatedDate.mockResolvedValue(false);
       await reservationService.reserveDate(params.userId, params.trainerId, params.startDate, params.endDate);
     } catch (err) {
       expect(err).toBeInstanceOf(CustomError);
