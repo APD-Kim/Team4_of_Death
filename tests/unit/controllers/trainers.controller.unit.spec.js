@@ -6,6 +6,8 @@ const mockTrainerService = {
   registerTrainer: jest.fn(),
   findAllTrainer: jest.fn(),
   findOneTrainer: jest.fn(),
+  updateTrainer: jest.fn(),
+  deleteTrainer: jest.fn(),
   findTrainerByCategory: jest.fn(),
 };
 
@@ -53,5 +55,70 @@ describe('Trainer Controller Unit Test', () => {
     await trainerController.findTrainerByCategory(mockRequest, mockResponse, mockNext);
     expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(0);
     expect(mockNext).toHaveBeenCalledWith(new CustomError(400, 'category 가 올바르지 않습니다.'));
+  });
+
+  it('registerTrainer Success', async () => {
+    const mockReturn = 'registerTrainer';
+
+    mockRequest.body = {
+      userId: 1,
+      price: 3000,
+      career: 1,
+      petCategory: 'dog',
+      address: '서울시 어쩌숙',
+    };
+
+    mockTrainerService.registerTrainer.mockResolvedValue(mockReturn);
+    await trainerController.registerTrainer(mockRequest, mockResponse, mockNext);
+    expect(mockTrainerService.registerTrainer).toHaveBeenCalledTimes(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(202);
+  });
+
+  it('findAllTrainer Success', async () => {
+    const mockReturn = 'findAllTrainer';
+
+    mockTrainerService.findAllTrainer.mockResolvedValue(mockReturn);
+    await trainerController.findAllTrainer(mockRequest, mockResponse, mockNext);
+    expect(mockTrainerService.findAllTrainer).toHaveBeenCalledTimes(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(202);
+  });
+
+  it('findOneTrainer Success', async () => {
+    const mockReturn = 'findOneTrainer';
+
+    mockRequest.params = {
+      trainerId: 3,
+    };
+
+    mockTrainerService.findOneTrainer.mockResolvedValue(mockReturn);
+    await trainerController.findOneTrainer(mockRequest, mockResponse, mockNext);
+    expect(mockTrainerService.findOneTrainer).toHaveBeenCalledTimes(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(200);
+  });
+
+  it('updateTrainer Success', async () => {
+    const mockReturn = 'updateTrainer';
+
+    mockRequest.params = {
+      trainerId: 3,
+    };
+
+    mockTrainerService.updateTrainer.mockResolvedValue(mockReturn);
+    await trainerController.updateTrainer(mockRequest, mockResponse, mockNext);
+    expect(mockTrainerService.updateTrainer).toHaveBeenCalledTimes(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(200);
+  });
+
+  it('deleteTrainer Success', async () => {
+    const mockReturn = 'deleteTrainer';
+
+    mockRequest.params = {
+      trainerId: 3,
+    };
+
+    mockTrainerService.deleteTrainer.mockResolvedValue(mockReturn);
+    await trainerController.deleteTrainer(mockRequest, mockResponse, mockNext);
+    expect(mockTrainerService.deleteTrainer).toHaveBeenCalledTimes(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(200);
   });
 });
