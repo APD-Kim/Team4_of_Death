@@ -7,7 +7,6 @@ export class TrainerService {
 
   registerTrainer = async (userId, price, career, petCategory, address) => {
     const user = await this.trainerRepository.findOneUser(userId);
-    console.log(user);
     if (user !== null) {
       if (user.users.isTrainer === true) {
         throw new CustomError(400, '이미 트레이너로 등록된 사용자 입니다.');
