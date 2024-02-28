@@ -24,7 +24,7 @@ export class UserRepository {
     });
     return findUser;
   };
-  signUpWithEmail = async (email, password, name, phoneNumber, petCategory) => {
+  signUpWithEmail = async (email, password, name, phoneNumber, petCategory, profileImg) => {
     const result = await this.prisma.$transaction(async (prisma) => {
       const createdUser = await prisma.users.create({
         data: {
@@ -33,6 +33,7 @@ export class UserRepository {
           name,
           phoneNumber,
           petCategory,
+          profileImg,
         },
       });
       const point = await prisma.points.create({
@@ -42,6 +43,7 @@ export class UserRepository {
           point: 1000,
         },
       });
+
       return { createdUser, point };
     });
     return result;
@@ -58,4 +60,43 @@ export class UserRepository {
     const savedToken = await this.redis.set(`refreshToken:${userId}`, refreshToken, { EX: 3600 * 24 * 7 });
     return savedToken;
   };
+
+  verifyEmailUpdate = async (email) => {
+    const updatedUser = await this.prisma.users.update({
+      where: {
+        email: email,
+      },
+      data: {
+        isVerified: true,
+      },
+    });
+    return updatedUser;
+  };
+  
+  /** 사용자 이미지 업로드 */
+  uploadImage = async (userId, imageURL) => {
+    console.log('userId', userId);
+    console.log('imageURL', imageURL);
+    const result = await this.prisma.$transaction(async (prisma) => {
+      const uploadImage = await prisma.users.update({
+        where: {
+          userId: +userId,
+        },
+        data: {
+          profileImg: imageURL,
+        },
+      });
+      return { uploadImage };
+    });
+    return result;
+  };
+
+  /** 사용자 이미지 조회 */
+  showImage = async () => {};
+
+  /** 사용자 이미지 수정 */
+  updateImage = async () => {};
+
+  /** 사용자 이미지 삭제 */
+  deleteImage = async () => {};
 }

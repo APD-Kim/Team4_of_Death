@@ -1,12 +1,10 @@
 generator client {
   provider = "prisma-client-js"
 }
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
-
 model Users {
   userId       Int            @id @default(autoincrement())
   name         String
@@ -19,13 +17,13 @@ model Users {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   isTrainer    Boolean        @default(false)
+  isVerified   Boolean        @default(false)
   likes        Likes[]
   points       Points?
   reservations Reservations[]
   reviews      Reviews[]
   trainers     Trainers?
 }
-
 model Points {
   pointId      String         @id
   userId       Int            @unique
@@ -34,7 +32,6 @@ model Points {
   pointHistory PointHistory[]
   users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
-
 model PointHistory {
   historyId    String      @id
   pointId      String
@@ -46,7 +43,6 @@ model PointHistory {
 
   @@index([pointId], map: "PointHistory_pointId_fkey")
 }
-
 model Trainers {
   trainerId    Int            @id @default(autoincrement())
   userId       Int            @unique
@@ -61,7 +57,6 @@ model Trainers {
   reviews      Reviews[]
   users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
-
 model Reservations {
   reservationId Int           @id @default(autoincrement())
   userId        Int
@@ -73,11 +68,9 @@ model Reservations {
   status        ReserveStatus @default(STANDBY)
   trainers      Trainers      @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
   users         Users         @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
   @@index([trainerId], map: "Reservations_trainerId_fkey")
   @@index([userId], map: "Reservations_userId_fkey")
 }
-
 model Reviews {
   reviewId  Int      @id @default(autoincrement())
   userId    Int
@@ -88,18 +81,15 @@ model Reviews {
   updatedAt DateTime @updatedAt
   trainers  Trainers @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
   users     Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
   @@index([trainerId], map: "Reviews_trainerId_fkey")
   @@index([userId], map: "Reviews_userId_fkey")
 }
-
 model Likes {
   userId    Int
   trainerId Int
   createdAt DateTime @default(now())
   trainers  Trainers @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade)
   users     Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
   @@unique([userId, trainerId])
   @@index([trainerId], map: "Likes_trainerId_fkey")
 }
