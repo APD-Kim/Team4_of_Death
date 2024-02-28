@@ -7,16 +7,20 @@ export class PointService {
   }
 
   calculateUserPoint = async (userId, point, status, adjustment) => {
-    const findUser = await this.userRepository.findUserByUserId(userId);
-    if (!findUser) {
-      throw new CustomError(404, '해당 유저를 찾을 수 없습니다.');
-    }
     const result = await this.pointRepository.calculatePoint(userId, point, status, adjustment);
-    return result;
+    return {
+      point: result.updatedResultPoint.point,
+      status: result.createdHistory.status,
+      pointChanged: result.createdHistory.pointChanged,
+      createdAt: result.createdHistory.createdAt,
+    };
   };
   showUserPoint = async (userId) => {
     const point = await this.pointRepository.searchPoint(userId);
-    return point;
+    return {
+      point: point.point,
+      updatedAt: point.updatedAt,
+    };
   };
 
   showPointHistory = async (userId, orderBy) => {

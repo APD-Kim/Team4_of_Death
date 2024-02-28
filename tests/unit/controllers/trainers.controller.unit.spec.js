@@ -10,6 +10,7 @@ const mockTrainerService = {
   updateTrainer: jest.fn(),
   deleteTrainer: jest.fn(),
   findTrainerByCategory: jest.fn(),
+  likeTrainer: jest.fn(),
 };
 
 const mockRequest = {
@@ -191,5 +192,65 @@ describe('Trainer Controller Unit Test', () => {
       expect(err.statusCode).toEqual(404);
     }
     expect(mockTrainerService.deleteTrainer).toHaveBeenCalledTimes(0);
+=======
+  it('likesTrainer Success if service send liked String', async () => {
+    const mockReturn = {
+      status: 'liked',
+    };
+
+    mockRequest.params = {
+      trainerId: 3,
+    };
+    mockRequest.user = {
+      userId: 1,
+    };
+    const foundTrainer = {
+      userId: 3,
+    };
+    mockTrainerService.findOneTrainer.mockResolvedValue(foundTrainer);
+    mockTrainerService.likeTrainer.mockResolvedValue(mockReturn);
+    await trainerController.likesTrainer(mockRequest, mockResponse, mockNext);
+    expect(mockTrainerService.findOneTrainer).toHaveBeenCalledTimes(1);
+    expect(mockTrainerService.likeTrainer).toHaveBeenCalledTimes(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(201);
+    expect(mockResponse.json).toHaveBeenCalledWith({ message: '성공적으로 좋아요를 눌렀습니다.' });
+  });
+  it('likesTrainer Success if service send cancelLiked String', async () => {
+    const mockReturn = {
+      status: 'cancelLiked',
+    };
+
+    mockRequest.params = {
+      trainerId: 3,
+    };
+    mockRequest.user = {
+      userId: 1,
+    };
+    const foundTrainer = {
+      userId: 3,
+    };
+    mockTrainerService.findOneTrainer.mockResolvedValue(foundTrainer);
+    mockTrainerService.likeTrainer.mockResolvedValue(mockReturn);
+    await trainerController.likesTrainer(mockRequest, mockResponse, mockNext);
+    expect(mockTrainerService.findOneTrainer).toHaveBeenCalledTimes(1);
+    expect(mockTrainerService.likeTrainer).toHaveBeenCalledTimes(1);
+    expect(mockResponse.status).toHaveBeenCalledWith(201);
+    expect(mockResponse.json).toHaveBeenCalledWith({ message: '성공적으로 좋아요를 취소했습니다.' });
+  });
+  it('likesTrainer failed by userId of Trainer and userId are the same', async () => {
+    mockRequest.params = {
+      trainerId: 3,
+    };
+    mockRequest.user = {
+      userId: 1,
+    };
+    const foundTrainer = {
+      userId: 1,
+    };
+    mockTrainerService.findOneTrainer.mockResolvedValue(foundTrainer);
+    await trainerController.likesTrainer(mockRequest, mockResponse, mockNext);
+    expect(mockTrainerService.findOneTrainer).toHaveBeenCalledTimes(1);
+    expect(mockTrainerService.likeTrainer).toHaveBeenCalledTimes(0);
+    expect(mockNext).toHaveBeenCalledWith(new CustomError(400, '자기 자신에게 좋아요를 누를 수 없습니다.'));
   });
 });

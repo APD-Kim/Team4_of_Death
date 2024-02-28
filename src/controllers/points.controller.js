@@ -16,7 +16,6 @@ export class PointController {
       }
       status = status.toUpperCase();
       adjustment = adjustment.toLowerCase();
-
       const caclulatedPoint = await this.pointService.calculateUserPoint(userId, point, status, adjustment);
       if (adjustment === 'increment') {
         res.status(200).json({ message: '포인트가 충전되었습니다.', data: caclulatedPoint });

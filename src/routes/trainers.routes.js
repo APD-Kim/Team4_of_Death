@@ -11,7 +11,7 @@ const trainerController = new TrainerController(trainerService);
 
 const router = express.Router();
 
-router.post('/', trainerController.registerTrainer);
+router.post('/', authJwt, trainerController.registerTrainer);
 router.get('/', trainerController.findAllTrainer);
 router.get('/available-for-reservation', trainerController.findTrainersNoDate); //일자 별로 예약가능한 트레이너 조회
 router.get('/:trainerId', trainerController.findOneTrainer);
