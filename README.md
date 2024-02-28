@@ -58,4 +58,6 @@
 - https://teamsparta.notion.site/fc5f89b8d79443139a00ede4ba0245d1?v=c64906aeeb6440dfb857a2cabb82e1dc
 
 # ERD
+![petsitter_erd_v2](https://github.com/APD-Kim/Team4_of_Death/assets/49227928/f6cbe768-4f76-429b-9923-0d8ca3843a12)
+
 - https://drawsql.app/teams/jaeheons-team/diagrams/pet-sitter-v2
