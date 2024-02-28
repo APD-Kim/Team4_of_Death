@@ -3,8 +3,8 @@ export class ReviewService {
     this.reviewRepository = reviewRepository;
   }
 
-  createReview = async (trainerId, userId, content, rating) => {
-    const createdReview = await this.reviewRepository.createReview(trainerId, userId, content, rating);
+  createReview = async (userId, trainerId, content, rating) => {
+    const createdReview = await this.reviewRepository.createReview(userId, trainerId, content, rating);
 
     return createdReview;
   };

@@ -18,6 +18,7 @@ export class ReservationController {
 
   getDates = async (req, res, next) => {
     try {
+      // const {userId} = req.user;
       const { trainerId } = req.body;
       const PossibleDates = await this.reservationService.findPossibleDates(trainerId);
       return res.status(200).json({ data: PossibleDates });
@@ -28,7 +29,7 @@ export class ReservationController {
 
   putReservation = async (req, res, next) => {
     try {
-      const user = req.user;
+      const {userId} = req.user;
       const { reservationId } = req.params;
       const { startDate, endDate } = req.body;
 
@@ -41,8 +42,8 @@ export class ReservationController {
 
   delReservation = async (req, res, next) => {
     try {
-      const userId = req.user;
-      console.log(userId);
+      const {userId} = req.user;
+
       const { reservationId } = req.params;
       if (!reservationId) {
         throw new CustomError(404, '요청이 잘못 되었습니다.');

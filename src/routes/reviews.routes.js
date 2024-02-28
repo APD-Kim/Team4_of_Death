@@ -11,8 +11,8 @@ const reviewRepository = new ReviewRepository(prisma);
 const reviewService = new ReviewService(reviewRepository);
 const reviewController = new ReviewController(reviewService);
 
-router.post('/', authJwt, reviewController.postReview);
-router.get('/', reviewController.getReviews);
+router.post('/:trainerId', authJwt, reviewController.postReview);
+router.get('/:trainerId', reviewController.getReviews);
 router.patch('/:reviewId', authJwt, reviewController.patchReview);
 router.delete('/:reviewId', authJwt, reviewController.deleteReview);
 

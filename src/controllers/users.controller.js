@@ -1,4 +1,6 @@
 import CustomError from '../utils/errorHandler.js';
+import { sendMail } from '../utils/auth.js';
+import { redisClient } from '../model/redis.js';
 
 export class UserController {
   constructor(userService) {
@@ -30,12 +32,21 @@ export class UserController {
 
       await this.userService.validatePhoneNumber(phoneNumber);
       const signedUser = await this.userService.signUp(email, password, name, phoneNumber, petCategory, profileImg);
-
-      res.status(201).json({ message: '회원가입 완료', data: signedUser });
+      const verificationCode = Math.random().toString(36).substring(7);
+      await sendMail(email, verificationCode);
+      res.status(201).json({
+        message: '회원가입이 완료되었습니다. 이메일로 전송된 인증코드를 입력하고 이메일 인증을 완료하세요.',
+        data: signedUser,
+      });
     } catch (err) {
+      if (err.message === `Missing credentials for "PLAIN"`) {
+        err.message = '이메일 전송 중 오류가 발생하였습니다.';
+      }
       next(err);
+    } finally {
     }
   };
+
   logIn = async (req, res, next) => {
     try {
       const { email, password } = req.body;
@@ -44,7 +55,6 @@ export class UserController {
       }
       const user = await this.userService.validUser(email, password);
       const { userId } = user;
-      //이메일과 비밀번호가 일치하는지 확인함
       const tokens = await this.userService.signToken(userId);
       res.cookie('authorization', tokens.bearerToken, {
         httpOnly: true,
@@ -63,15 +73,47 @@ export class UserController {
       next(err);
     }
   };
-  issueRefreshToken = async (req, res, next) => {
-    const { userId } = req.user;
-    const { refreshToken } = req.cookies;
-    if (!refreshToken) {
-      throw new CustomError(400, '리프레시 토큰이 존재하지 않습니다.');
-    }
-    //리프레시 토큰이 있다면
 
-    res.status(200).json({ message: refreshToken });
+  reSendAuthenticationCode = async (req, res, next) => {
+    try {
+      const { email } = req.params;
+      const verificationCode = Math.random().toString(36).substring(7);
+      await sendMail(email, verificationCode);
+
+      res.status(201).json({
+        message: '인증코드가 재발급 되었습니다.',
+      });
+    } catch (err) {
+      if (err.message === `Missing credentials for "PLAIN"`) {
+        err.message = '이메일 전송 중 오류가 발생하였습니다.';
+      }
+      next(err);
+    }
+  };
+
+  // 노드메일러 인증코드 확인
+  verifyEmail = async (req, res, next) => {
+    try {
+      const { email, code } = req.body;
+      if (!email || !code) {
+        throw new CustomError(400, '이메일과 코드를 모두 제공해주세요.');
+      }
+      const cashedCode = await new Promise((resolve, reject) => {
+        redisClient.get(email, (err, cashedCode) => {
+          if (err) {
+            reject(new CustomError(500, 'Redis에서 인증 코드 가져오는 중 오류가 발생했습니다.'));
+          }
+          resolve(cashedCode);
+        });
+      });
+      if (!cashedCode || code !== cashedCode) {
+        throw new CustomError(400, '인증 코드가 일치하지 않습니다.');
+      }
+      await this.userService.verifyEmail(email, code); // 이메일과 코드를 함께 전달
+      res.status(200).json({ message: '인증이 성공적으로 완료되었습니다.' });
+    } catch (err) {
+      next(err);
+    }
   };
 
   /** 사용자 로그아웃 */
@@ -182,7 +224,6 @@ export class UserController {
 
       const uploadImage = await this.userService.uploadImage(userId, profileImg);
 
-      console.log(uploadImage);
       if (!uploadImage) {
         throw new CustomError(400, '이미지 DB저장에 실패하였습니다.');
       }

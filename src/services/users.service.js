@@ -5,7 +5,7 @@ import { s3 } from '../model/multer.js';
 import 'dotenv/config';
 
 export class UserService {
-  constructor(userRepository) {
+  constructor(userRepository, bcrypt) {
     this.userRepository = userRepository;
   }
   signUp = async (email, password, name, phoneNumber, petCategory, profileImg) => {
@@ -68,8 +68,31 @@ export class UserService {
 
     return {
       bearerToken,
-      saveRefreshToken,
+      bearerRefreshToken,
     };
+  };
+  sendEmailVerification = async (email) => {
+    try {
+      const { email } = req.params;
+      if (!email) {
+        throw new CustomError(400, '이메일 주소를 입력하세요.');
+      }
+
+      const verificationCode = Math.random().toString(36).substring(7);
+      await sendMail(email, verificationCode);
+
+      res.status(200).json({ message: '이메일로 인증 코드가 전송되었습니다.' });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  verifyEmail = async (email) => {
+    const user = await this.userRepository.findUserByEmail(email);
+    if (!user) {
+      throw new CustomError(404, '사용자를 찾을 수 없습니다.');
+    }
+    await this.userRepository.verifyEmailUpdate(email); // 이메일 인증 상태를 업데이트
   };
 
   /** 사용자 로그아웃 */
@@ -153,7 +176,7 @@ export class UserService {
   uploadImage = async (userId, imageURL) => {
     const uploadImage = await this.userRepository.uploadImage(userId, imageURL);
 
-    console.log(uploadImage);
+
     if (!uploadImage) {
       throw new CustomError(400, '이미지 파일 DB저장에 실패하였습니다.');
     }

@@ -6,7 +6,6 @@ import { prisma } from '../utils/prisma.js';
 import { authJwt } from '../middlewares/auth.middleware.js';
 import { redisCli } from '../model/redis.js';
 import { upload } from '../model/multer.js';
-
 const router = express.Router();
 
 const userRepository = new UserRepository(prisma, redisCli);
@@ -15,7 +14,8 @@ const userController = new UserController(userService);
 
 router.post('/sign-up', upload.single('profileImg'), userController.signUp);
 router.post('/login', userController.logIn);
-router.post('/refresh', authJwt, userController.issueRefreshToken);
+router.post('/verification/:email', authJwt, userController.reSendAuthenticationCode);
+router.post('/verification', authJwt, userController.verifyEmail);
 
 /** 사용자 로그아웃 */
 router.post('/logout', authJwt, userController.logOut);

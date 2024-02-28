@@ -61,6 +61,18 @@ export class UserRepository {
     return savedToken;
   };
 
+  verifyEmailUpdate = async (email) => {
+    const updatedUser = await this.prisma.users.update({
+      where: {
+        email,
+      },
+      data: {
+        isVerified: true,
+      },
+    });
+    return updatedUser;
+  };
+
   /** 사용자 로그아웃 */
   removeToken = async (userId) => {
     const removeToken = await this.redis.del(`refreshToken:${userId}`);
@@ -114,8 +126,6 @@ export class UserRepository {
 
   /** 사용자 이미지 업로드 */
   uploadImage = async (userId, imageURL) => {
-    console.log('userId', userId);
-    console.log('imageURL', imageURL);
     const result = await this.prisma.$transaction(async (prisma) => {
       const uploadImage = await prisma.users.update({
         where: {

@@ -13,6 +13,11 @@ const mockPrisma = {
   users: {
     update: jest.fn(),
   },
+  likes: {
+    create: jest.fn(),
+    findFirst: jest.fn(),
+    delete: jest.fn(),
+  },
 };
 
 const trainerRepository = new TrainerRepository(mockPrisma);
@@ -78,14 +83,22 @@ describe('Trainer Repository Unit Test', () => {
     expect(trainerRepository.prisma.trainers.findMany).toHaveBeenCalledTimes(1);
   });
 
-  it('findOneUser', async () => {
+  it('findOneTrainer', async () => {
     const mockReturn = 'findFirst String';
-    mockPrisma.trainers.findFirst.mockReturnValue(mockReturn);
+    mockPrisma.trainers.findFirst.mockResolvedValue(mockReturn);
 
-    const findOneTrainerData = await trainerRepository.findOneTrainer();
+    const findOneTrainerData = await trainerRepository.findOneTrainer(1);
 
     expect(findOneTrainerData).toEqual(mockReturn);
     expect(trainerRepository.prisma.trainers.findFirst).toHaveBeenCalledTimes(1);
+    // expect(trainerRepository.prisma.trainers.findFirst).toHaveBeenCalledWith({
+    //   where: {
+    //     reviewId: +1,
+    //   },
+    //   include: {
+    //     userId: true,
+    //   },
+    // });
   });
 
   it('updateTrainer', async () => {
@@ -120,5 +133,66 @@ describe('Trainer Repository Unit Test', () => {
     expect(mockPrisma.trainers.delete).toHaveBeenCalledWith({
       where: { trainerId: +1 },
     });
+  });
+
+  it('findOneUser', async () => {
+    const mockReturn = 'findFirst String';
+    mockPrisma.trainers.findFirst.mockReturnValue(mockReturn);
+
+    const findOneUserData = await trainerRepository.findOneUser(1);
+
+    expect(findOneUserData).toEqual(mockReturn);
+    expect(trainerRepository.prisma.trainers.findFirst).toHaveBeenCalledTimes(1);
+  });
+  it('likeTrainer method', async () => {
+    const mockReturn = 'liked String';
+    const params = {
+      userId: 1,
+      trainerId: 3,
+    };
+    mockPrisma.likes.create.mockReturnValue(mockReturn);
+    const likedData = await trainerRepository.likeTrainer(params.userId, params.trainerId);
+
+    expect(likedData).toEqual(mockReturn);
+    expect(mockPrisma.likes.create).toHaveBeenCalledTimes(1);
+  });
+  it('existLike  method', async () => {
+    const mockReturn = 'foundLikeData String';
+    const params = {
+      userId: 1,
+      trainerId: 3,
+    };
+    mockPrisma.likes.findFirst.mockReturnValue(mockReturn);
+    const likedData = await trainerRepository.existLike(params.userId, params.trainerId);
+
+    expect(likedData).toEqual(mockReturn);
+    expect(mockPrisma.likes.findFirst).toHaveBeenCalledTimes(1);
+  });
+  it('cancelLikeTrainer  method', async () => {
+    const mockReturn = 'deletedLikedData String';
+    const params = {
+      userId: 1,
+      trainerId: 3,
+    };
+    mockPrisma.likes.delete.mockReturnValue(mockReturn);
+    const likedData = await trainerRepository.cancelLikeTrainer(params.userId, params.trainerId);
+
+    expect(likedData).toEqual(mockReturn);
+    expect(mockPrisma.likes.delete).toHaveBeenCalledTimes(1);
+  });
+  it('should handle exceptions in cancelLikeTrainer method', async () => {
+    // prisma.likes.delete가 오류를 발생시키도록 설정
+    mockPrisma.likes.delete.mockRejectedValue(new Error('Async error'));
+
+    const params = {
+      userId: 1,
+      trainerId: 3,
+    };
+
+    // 예외가 발생할 것으로 예상하고, 비동기 함수를 호출
+    await expect(trainerRepository.cancelLikeTrainer(params.userId, params.trainerId)).rejects.toThrow('Async error');
+
+    // prisma.likes.delete가 호출되었는지 확인
+    expect(mockPrisma.likes.delete).toHaveBeenCalledTimes(1);
   });
 });

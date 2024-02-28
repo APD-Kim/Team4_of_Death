@@ -16,7 +16,7 @@ const reservationController = new ReservationController(reservationService);
 const router = express.Router();
 
 router.post('/', authJwt, reservationController.reserveTrainer);
-router.get('/', reservationController.getDates);
+router.get('/', authJwt, reservationController.getDates);
 router.put('/:reservationId', reservationController.putReservation);
 router.delete('/:reservationId', reservationController.delReservation);
 
