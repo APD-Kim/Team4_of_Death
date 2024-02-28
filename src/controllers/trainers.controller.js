@@ -35,7 +35,7 @@ export class TrainerController {
     try {
       const { trainerId } = req.params;
       if (!trainerId) {
-        throw new CustomError(404, 'trainer 아이디가 올바르지 않습니다..');
+        throw new CustomError(404, 'trainer 아이디가 올바르지 않습니다.');
       }
 
       const trainer = await this.trainerService.findOneTrainer(trainerId);
@@ -107,6 +107,18 @@ export class TrainerController {
 
       await this.trainerService.deleteTrainer(trainerId);
       return res.status(200).json({ message: '정상적으로 삭제되었습니다.' });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  findTrainersNoDate = async (req, res, next) => {
+    try {
+      const { startDate, endDate } = req.body;
+
+      const reservationPossibleTrainers = await this.trainerService.findTrainersNoDate(startDate, endDate);
+
+      return res.status(200).json({ data: reservationPossibleTrainers });
     } catch (err) {
       next(err);
     }

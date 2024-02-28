@@ -1,7 +1,7 @@
-import express from "express";
-import cookieParser from "cookie-parser";
-import userRouter from "./routes/users.routes.js";
-import reviewRouter from "./routes/reviews.routes.js";
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import userRouter from './routes/users.routes.js';
+import reviewRouter from './routes/reviews.routes.js';
 import reservationRouter from './routes/reservations.routes.js';
 import trainersRouter from '../src/routes/trainers.routes.js';
 import pointRouter from "../src/routes/points.routes.js"
@@ -15,10 +15,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use('/users', userRouter);
-app.use('/reviews', reviewRouter)
+app.use('/reviews', reviewRouter);
 app.use('/trainers', trainersRouter);
 app.use('/reservations', reservationRouter);
-app.use('/points', pointRouter)
+app.use('/points', pointRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
