@@ -54,4 +54,10 @@ describe('Trainer Controller Unit Test', () => {
     expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(0);
     expect(mockNext).toHaveBeenCalledWith(new CustomError(400, 'category 가 올바르지 않습니다.'));
   });
+  it('findTrainerByCategory Method about no data', async () => {
+    mockRequest.body = { category: 'dog' };
+    await trainerController.findTrainerByCategory(mockRequest, mockResponse, mockNext);
+    expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(1);
+    expect(mockNext).toHaveBeenCalledWith(new CustomError(400, '해당 카테고리에 조회된 트레이너가 없습니다.'));
+  });
 });

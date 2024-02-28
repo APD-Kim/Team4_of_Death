@@ -71,6 +71,9 @@ export class TrainerController {
       }
 
       const trainerList = await this.trainerService.findTrainerByCategory(category);
+      if (!trainerList) {
+        throw new CustomError(400, '해당 카테고리에 조회된 트레이너가 없습니다.');
+      }
 
       return res.status(200).json({ message: '카테고리별 펫시터 조회 완료', data: trainerList });
     } catch (err) {
