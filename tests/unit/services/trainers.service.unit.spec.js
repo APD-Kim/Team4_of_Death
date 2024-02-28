@@ -55,7 +55,7 @@ describe('Trainer Service Unit Test', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(CustomError);
       expect(err.message).toEqual('해당 카테고리내 트레이너가 존재하지 않습니다.');
-      expect(err.statusCode).toEqual(400);
+      expect(err.statusCode).toEqual(401);
     }
   });
 

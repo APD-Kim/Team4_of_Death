@@ -58,7 +58,7 @@ export class TrainerService {
   findTrainerByCategory = async (category) => {
     const trainerList = await this.trainerRepository.findTrainerByCategory(category);
     if (!trainerList) {
-      throw new CustomError(400, '해당 카테고리내 트레이너가 존재하지 않습니다.');
+      throw new CustomError(401, '해당 카테고리내 트레이너가 존재하지 않습니다.');
     }
     return trainerList;
   };

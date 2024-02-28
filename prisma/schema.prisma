@@ -30,7 +30,7 @@ model Users {
 model Points {
   pointId      String         @id
   userId       Int            @unique
-  point        Int
+  point        Int            @default(0)
   updatedAt    DateTime       @updatedAt
   pointHistory PointHistory[]
   users        Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)

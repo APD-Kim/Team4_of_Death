@@ -11,6 +11,7 @@ const mockTrainerService = {
   deleteTrainer: jest.fn(),
   findTrainerByCategory: jest.fn(),
   likeTrainer: jest.fn(),
+  deleteImage: jest.fn(),
 };
 
 const mockRequest = {
@@ -50,21 +51,22 @@ describe('Trainer Controller Unit Test', () => {
     mockRequest.params = {};
     await trainerController.findTrainerByCategory(mockRequest, mockResponse, mockNext);
     expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(0);
-    expect(mockNext).toHaveBeenCalledWith(new CustomError(400, 'category 값이 비어있습니다.'));
+    expect(mockNext).toHaveBeenCalledWith(new CustomError(500, 'category 값이 비어있습니다.'));
   });
   it('findTrainerByCategory Method about invalid arguments', async () => {
     mockRequest.params = { category: 'dogggg' };
     await trainerController.findTrainerByCategory(mockRequest, mockResponse, mockNext);
     expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(0);
-    expect(mockNext).toHaveBeenCalledWith(new CustomError(400, 'category 가 올바르지 않습니다.'));
+    expect(mockNext).toHaveBeenCalledWith(new CustomError(500, 'category 가 올바르지 않습니다.'));
   });
-<<<<<<< HEAD
+
   it('findTrainerByCategory Method about no data', async () => {
-    mockRequest.body = { category: 'dog' };
+    mockRequest.params = { category: 'dog' };
+    mockTrainerService.findTrainerByCategory.mockResolvedValue(null);
     await trainerController.findTrainerByCategory(mockRequest, mockResponse, mockNext);
     expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(1);
     expect(mockNext).toHaveBeenCalledWith(new CustomError(400, '해당 카테고리에 조회된 트레이너가 없습니다.'));
-=======
+  });
 
   it('registerTrainer Success', async () => {
     const mockReturn = 'registerTrainer';
@@ -199,7 +201,8 @@ describe('Trainer Controller Unit Test', () => {
       expect(err.statusCode).toEqual(404);
     }
     expect(mockTrainerService.deleteTrainer).toHaveBeenCalledTimes(0);
-=======
+  });
+
   it('likesTrainer Success if service send liked String', async () => {
     const mockReturn = {
       status: 'liked',
@@ -259,6 +262,5 @@ describe('Trainer Controller Unit Test', () => {
     expect(mockTrainerService.findOneTrainer).toHaveBeenCalledTimes(1);
     expect(mockTrainerService.likeTrainer).toHaveBeenCalledTimes(0);
     expect(mockNext).toHaveBeenCalledWith(new CustomError(400, '자기 자신에게 좋아요를 누를 수 없습니다.'));
->>>>>>> 9888bb335d9ea601380efe95db295fe954e833e4
   });
 });

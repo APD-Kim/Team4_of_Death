@@ -16,22 +16,22 @@ export class ReservationController {
     }
   };
 
-  findPossibleDatesForTrainer = async(req, res, next) => {
-    try{
-      const {trainerId} = req.params;
+  findPossibleDatesForTrainer = async (req, res, next) => {
+    try {
+      const { trainerId } = req.params;
       const possibleDates = await this.reservationService.findPossibleDatesForTrainer(trainerId);
-      return res.status(200).json({data: possibleDates});
-    } catch(err) {
+      return res.status(200).json({ data: possibleDates });
+    } catch (err) {
       next(err);
     }
-  }
+  };
 
   getDates = async (req, res, next) => {
     try {
       const { trainerId } = req.body;
       const reservationDates = await this.reservationService.findReservationDates(trainerId);
-      if(reservationDates.length === 0) {
-        throw new CustomError(404, '예약 된 내역이 존재하지 않습니다.')
+      if (reservationDates.length === 0) {
+        throw new CustomError(404, '예약 된 내역이 존재하지 않습니다.');
       }
 
       return res.status(200).json({ data: reservationDates });
@@ -64,7 +64,7 @@ export class ReservationController {
 
   delReservation = async (req, res, next) => {
     try {
-      const {userId} = req.user;
+      const { userId } = req.user;
 
       const { reservationId } = req.params;
 

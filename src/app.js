@@ -21,12 +21,11 @@ app.use('/reservations', reservationRouter);
 app.use('/points', pointRouter);
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  console.error(err.message);
-  const statusCode = err.statusCode ?? 500;
+  console.log(err.stack);
+  const status = err.statusCode ?? 500;
   const message = err.message ?? '서버 에러 발생';
   const boolean = err.boolean ?? false;
-  res.status(statusCode).json({ success: boolean, message: message });
+  res.status(status).json({ success: boolean, message: message });
 });
 
 app.get('/', function (req, res) {

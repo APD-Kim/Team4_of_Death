@@ -39,11 +39,12 @@ export class UserController {
         data: signedUser,
       });
     } catch (err) {
+      console.log(1, err.message);
+      console.log(1, err);
       if (err.message === `Missing credentials for "PLAIN"`) {
         err.message = '이메일 전송 중 오류가 발생하였습니다.';
       }
       next(err);
-    } finally {
     }
   };
 

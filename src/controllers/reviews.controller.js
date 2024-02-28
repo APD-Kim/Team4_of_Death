@@ -96,7 +96,10 @@ export class ReviewController {
       }
 
       const foundUserId = await this.reviewService.findUserIdByReviewId(reviewId);
-
+      console.log(foundUserId);
+      if (!foundUserId) {
+        throw new CustomError(400, '해당 리뷰를 찾을 수 없습니다.');
+      }
       if (user.userId !== foundUserId.userId) {
         throw new CustomError(400, '리뷰를 수정할 권한이 없습니다.');
       }
