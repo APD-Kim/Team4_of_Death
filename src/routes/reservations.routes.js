@@ -18,6 +18,7 @@ const router = express.Router();
 
 router.post('/', authJwt, reservationController.reserveTrainer);
 router.get('/', authJwt, reservationController.getDates);
+router.get('/:trainerId', reservationController.findPossibleDatesForTrainer);
 router.put('/:reservationId', authJwt, reservationController.putReservation);
 router.delete('/:reservationId', authJwt, reservationController.delReservation);
 

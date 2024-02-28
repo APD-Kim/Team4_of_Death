@@ -42,10 +42,40 @@ export class ReservationService {
     return { reservedDate, subPoint };
   };
 
+  // 트레이너의 예약 가능한 날짜 찾기
+  findPossibleDatesForTrainer = async(trainerId) => {
+    const today = new Date();
+    const endDate = new Date();
+    // setFullYert 메서드는 현재 날짜에서 1년 후 날짜 까지 예약 가능한 날짜 조회 하는 메서드
+    endDate.setFullYear(today.getFullYear() +1);
+    // toLocaleDateString 을 쓰면 보기 좋은 날짜로 변환됨.
+    const startDate = today.toISOString();
+
+    const trainer = await this.trainerRepository.findOneTrainer(trainerId);
+    if (!trainer) {
+      throw new CustomError(404, '해당 트레이너를 찾을 수 없습니다.');
+    }
+
+    const reservations = await this.reservationRepository.findTrainerPossibleReservations(trainerId, startDate, endDate);
+    const possibleDates = [];
+    for(let i = 0; i < 365; i++) {
+      const currentDate = new Date(today);
+      currentDate.setDate(today.getDate() + i);
+      const isPossible = reservations.every((reservation) => {
+        const reservationStartDate = new Date(reservation.startDate);
+        const reservationEndDate = new Date(reservation.endDate);
+        return currentDate < reservationStartDate || currentDate > reservationEndDate;
+      });
+      if(isPossible){
+        possibleDates.push(currentDate.toISOString());
+      }
+    }
+    return possibleDates;
+  }
+
   findReservationDates = async (trainerId) => {
 
       const reservationDates = await this.reservationRepository.findReservationDates(trainerId);
-
       return reservationDates.map((reservation) => ({
         reservationId: reservation.reservationId,
         startDate: reservation.startDate,
@@ -69,11 +99,6 @@ export class ReservationService {
   }
 
   updateReservation = async (reservationId, startDate, endDate) => {    
-    // const findReservation = await this.reservationRepository.findReservationByIdUnique(reservationId);
-    // // if (userId !== findReservation.userId) {
-    // //   throw new CustomError(404, '해당 예약에 권한이 없습니다.');
-    // // }
-    
     const updateReservations = await this.reservationRepository.updateReservation(reservationId, startDate, endDate);
     return {
       reservationId: updateReservations.reservationId,
@@ -86,7 +111,5 @@ export class ReservationService {
   deleteReservation = async (reservationId) => {
     const deletedReservation = await this.reservationRepository.deleteReservation(reservationId);
     return deletedReservation;
-    // await this.reservationRepository.deleteReservation(reservationId);
-    // return { message: '예약 정보를 삭제하였습니다.' };
   };
 }

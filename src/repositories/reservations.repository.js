@@ -38,6 +38,29 @@ export class ReservationRepository {
     return findDates;
   };
 
+  // 예약 가능한 날짜 찾기
+  findTrainerPossibleReservations = async (trainerId, startDate, endDate) => {
+    const possibleDates = await this.prisma.reservations.findMany({
+      where: {
+        trainerId: +trainerId,
+        AND: [
+          {
+            startDate: {
+              lte: new Date(endDate),
+            },
+          },
+          {
+            endDate: {
+              gte: new Date(startDate),
+            },
+          },
+        ],
+      },
+    });
+    return possibleDates;
+  };
+
+  // 트레이너에 예약 된 날짜 찾기
   findReservationById = async (reservationId) => {
     const findReservations = await this.prisma.reservations.findFirst({
       where: {
