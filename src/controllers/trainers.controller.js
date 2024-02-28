@@ -77,6 +77,9 @@ export class TrainerController {
       }
 
       const trainerList = await this.trainerService.findTrainerByCategory(category);
+      if (!trainerList) {
+        throw new CustomError(400, '해당 카테고리에 조회된 트레이너가 없습니다.');
+      }
 
       return res.status(200).json({ message: '카테고리별 펫시터 조회 완료', data: trainerList });
     } catch (err) {
@@ -85,20 +88,21 @@ export class TrainerController {
   };
 
   updateTrainer = async (req, res, next) => {
-    try {
-      const { trainerId } = req.params;
-      if (!trainerId) {
-        throw new CustomError(404, 'trainer 아이디가 올바르지 않습니다..');
-      }
-      const { career, petCategory, address, price } = req.body;
-      if (!career || !petCategory || !address || !price) {
-        throw new CustomError(404, '형식이 맞지 않습니다.');
-      }
-      const trainer = await this.trainerService.updateTrainer(trainerId, career, petCategory, address, price);
-      return res.status(200).json({ message: trainer });
-    } catch (err) {
-      next(err);
+    // try {
+    const { trainerId } = req.params;
+    if (!trainerId) {
+      throw new CustomError(404, 'trainer 아이디가 올바르지 않습니다.');
     }
+    const { career, petCategory, address, price } = req.body;
+    if (!career || !petCategory || !address || !price) {
+      console.log('형식이 맞지 않는 콘솔');
+      throw new CustomError(404, '형식이 맞지 않습니다.');
+    }
+    const trainer = await this.trainerService.updateTrainer(trainerId, career, petCategory, address, price);
+    return res.status(200).json({ message: trainer });
+    // } catch (err) {
+    //   next(err);
+    // }
   };
 
   deleteTrainer = async (req, res, next) => {

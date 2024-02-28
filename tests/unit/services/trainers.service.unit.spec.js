@@ -70,23 +70,35 @@ describe('Trainer Service Unit Test', () => {
     expect(mockTrainerRepository.registerTrainer).toHaveBeenCalledTimes(1);
   });
 
-  // it('registerTrainer ERR', async () => {
-  //   const registerTrainer = null;
-  //   try {
-  //     mockTrainerRepository.findOneUser.mockResolvedValue(mockReturn);
-  //   } catch (err) {
-  //     expect(err).toBeInstanceOf(CustomError);
-  //     expect(err.statusCode).toEqual(400);
-  //     expect(err.message).toEqual('이미 트레이너로 등록된 사용자 입니다.');
-  //   }
-  //   try {
-  //     mockTrainerRepository.registerTrainer.mockResolvedValue(1);
-  //   } catch (err) {
-  //     expect(err).toBeInstanceOf(CustomError);
-  //     expect(err.statusCode).toEqual(400);
-  //     expect(err.message).toEqual('트레이너 등록을 위한 필수 정보가 누락되었습니다.');
-  //   }
-  // });
+  it('registerTrainer user CustomError', async () => {
+    const mockReturn = { users: { isTrainer: true } };
+
+    try {
+      mockTrainerRepository.findOneUser.mockResolvedValue(mockReturn);
+      await trainerService.registerTrainer();
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('이미 트레이너로 등록된 사용자 입니다.');
+      expect(err.statusCode).toEqual(400);
+    }
+    expect(mockTrainerRepository.findOneUser).toHaveBeenCalledTimes(1);
+    expect(mockTrainerRepository.registerTrainer).toHaveBeenCalledTimes(0);
+  });
+
+  it('registerTrainer info CustomError', async () => {
+    const mockReturn = { users: { isTrainer: false } };
+
+    try {
+      mockTrainerRepository.findOneUser.mockResolvedValue(mockReturn);
+      await trainerService.registerTrainer();
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('트레이너 등록을 위한 필수 정보가 누락되었습니다.');
+      expect(err.statusCode).toEqual(400);
+    }
+    expect(mockTrainerRepository.findOneUser).toHaveBeenCalledTimes(1);
+    expect(mockTrainerRepository.registerTrainer).toHaveBeenCalledTimes(0);
+  });
 
   it('findAllTrainer Success', async () => {
     const mockReturn = 'findAllTrainer';
@@ -97,6 +109,21 @@ describe('Trainer Service Unit Test', () => {
     expect(mockTrainerRepository.findAllTrainer).toHaveBeenCalledTimes(1);
   });
 
+  it('findAllTrainer CustomError', async () => {
+    const mockReturn = { users: { isTrainer: false } };
+
+    try {
+      mockTrainerRepository.findAllTrainer.mockResolvedValue(mockReturn);
+      await trainerService.findAllTrainer();
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('트레이너가 없습니다.');
+      expect(err.statusCode).toEqual(400);
+    }
+    expect(mockTrainerRepository.findOneUser).toHaveBeenCalledTimes(0);
+    expect(mockTrainerRepository.registerTrainer).toHaveBeenCalledTimes(0);
+  });
+
   it('findOneTrainer Success', async () => {
     const mockReturn = 'findOneTrainer';
 
@@ -104,6 +131,21 @@ describe('Trainer Service Unit Test', () => {
     const findOneTrainerData = await trainerService.findOneTrainer();
     expect(findOneTrainerData).toEqual(mockReturn);
     expect(mockTrainerRepository.findOneTrainer).toHaveBeenCalledTimes(1);
+  });
+
+  it('findOneTrainer CustomError', async () => {
+    const mockReturn = { trainerId: false };
+
+    try {
+      // mockTrainerRepository.findOneTrainer.mockResolvedValue(mockReturn);
+      await trainerService.findOneTrainer();
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('트레이너가 존재하지 않습니다.');
+      expect(err.statusCode).toEqual(404);
+    }
+    expect(mockTrainerRepository.findOneUser).toHaveBeenCalledTimes(0);
+    expect(mockTrainerRepository.registerTrainer).toHaveBeenCalledTimes(0);
   });
 
   it('updateTrainer Success', async () => {

@@ -21,7 +21,7 @@ app.use('/reservations', reservationRouter);
 app.use('/points', pointRouter);
 
 app.use((err, req, res, next) => {
-  const status = err.status ?? 500;
+  const status = err.statusCode ?? 500;
   const message = err.message ?? '서버 에러 발생';
   const boolean = err.boolean ?? false;
   res.status(status).json({ success: boolean, message: message });

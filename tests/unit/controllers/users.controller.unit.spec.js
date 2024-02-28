@@ -96,7 +96,7 @@ describe('User Controller Unit Test', () => {
     };
     await userController.signUp(mockRequest, mockResponse, mockNext);
     expect(mockUserService.validatePhoneNumber).toHaveBeenCalledTimes(0);
-    expect(mockUserService.signUp).toHaveBeenCalledTimes(1);
+    expect(mockUserService.signUp).toHaveBeenCalledTimes(0);
     expect(mockNext).toHaveBeenCalledWith(new CustomError(40, '비밀번호를 다시 확인하세요.'));
   });
   it('login method ', async () => {

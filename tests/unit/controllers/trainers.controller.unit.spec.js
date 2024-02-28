@@ -1,6 +1,7 @@
 import { expect, jest } from '@jest/globals';
 import CustomError from '../../../src/utils/errorHandler.js';
 import { TrainerController } from '../../../src/controllers/trainers.controller.js';
+import { TrainerService } from '../../../src/services/trainers.service.js';
 
 const mockTrainerService = {
   registerTrainer: jest.fn(),
@@ -10,6 +11,7 @@ const mockTrainerService = {
   deleteTrainer: jest.fn(),
   findTrainerByCategory: jest.fn(),
   likeTrainer: jest.fn(),
+  deleteImage: jest.fn(),
 };
 
 const mockRequest = {
@@ -56,6 +58,13 @@ describe('Trainer Controller Unit Test', () => {
     await trainerController.findTrainerByCategory(mockRequest, mockResponse, mockNext);
     expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(0);
     expect(mockNext).toHaveBeenCalledWith(new CustomError(500, 'category 가 올바르지 않습니다.'));
+  });
+
+  it('findTrainerByCategory Method about no data', async () => {
+    mockRequest.body = { category: 'dog' };
+    await trainerController.findTrainerByCategory(mockRequest, mockResponse, mockNext);
+    expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(0);
+    expect(mockNext).toHaveBeenCalledWith(new CustomError(400, '해당 카테고리에 조회된 트레이너가 없습니다.'));
   });
 
   it('registerTrainer Success', async () => {
@@ -108,6 +117,7 @@ describe('Trainer Controller Unit Test', () => {
     await trainerController.updateTrainer(mockRequest, mockResponse, mockNext);
     expect(mockTrainerService.updateTrainer).toHaveBeenCalledTimes(1);
     expect(mockResponse.status).toHaveBeenCalledWith(200);
+    expect(mockResponse.json).toHaveBeenCalledWith({ message: mockReturn });
   });
 
   it('deleteTrainer Success', async () => {
@@ -122,6 +132,76 @@ describe('Trainer Controller Unit Test', () => {
     expect(mockTrainerService.deleteTrainer).toHaveBeenCalledTimes(1);
     expect(mockResponse.status).toHaveBeenCalledWith(200);
   });
+
+  it('registerTrainer CustomError', async () => {
+    mockRequest.body = { userId: 1 };
+
+    try {
+      await trainerController.registerTrainer(mockRequest, mockResponse, mockNext);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('형식이 맞지 않습니다.');
+      expect(err.statusCode).toEqual(404);
+    }
+    expect(mockTrainerService.registerTrainer).toHaveBeenCalledTimes(0);
+  });
+
+  it('findOneTrainer', async () => {
+    mockRequest.params = { trainerId: false };
+
+    try {
+      await trainerController.findOneTrainer(mockRequest, mockResponse, mockNext);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('trainer 아이디가 올바르지 않습니다.');
+      expect(err.statusCode).toEqual(404);
+    }
+    expect(mockTrainerService.findOneTrainer).toHaveBeenCalledTimes(0);
+  });
+
+  it('updateTrainer trainerFalse CustomError', async () => {
+    mockRequest.params = { trainerId: false };
+
+    try {
+      console.log('위쪽콘솔 ');
+      await trainerController.updateTrainer(mockRequest, mockResponse, mockNext);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('trainer 아이디가 올바르지 않습니다.');
+      expect(err.statusCode).toEqual(404);
+    }
+    expect(mockTrainerService.updateTrainer).toHaveBeenCalledTimes(0);
+  });
+
+  it('updateTrainer Form CustomError', async () => {
+    mockRequest.params = { trainerId: 1 };
+    mockRequest.body = { career: 1 };
+
+    try {
+      console.log('여기이빈다아');
+      await trainerController.updateTrainer(mockRequest, mockResponse, mockNext);
+    } catch (err) {
+      console.log('여기임ㅇㄹㅁ', err);
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('형식이 맞지 않습니다.');
+      expect(err.statusCode).toEqual(404);
+    }
+    expect(mockTrainerService.updateTrainer).toHaveBeenCalledTimes(0);
+  });
+
+  it('deleteTrainer CustomError', async () => {
+    mockRequest.params = { trainerId: false };
+
+    try {
+      await trainerController.deleteTrainer(mockRequest, mockResponse, mockNext);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CustomError);
+      expect(err.message).toEqual('trainer 아이디가 올바르지 않습니다.');
+      expect(err.statusCode).toEqual(404);
+    }
+    expect(mockTrainerService.deleteTrainer).toHaveBeenCalledTimes(0);
+  });
+
   it('likesTrainer Success if service send liked String', async () => {
     const mockReturn = {
       status: 'liked',
