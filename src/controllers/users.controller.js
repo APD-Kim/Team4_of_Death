@@ -80,6 +80,8 @@ export class UserController {
     res.status(200).json({ message: refreshToken });
   };
 
+  // 노드메일러 인증코드 전송
+  // ../utils/auth.js에 sendMail 정의 되어 있습니다.
   sendEmailVerification = async (req, res, next) => {
     try {
       const { email } = req.params;
@@ -96,6 +98,7 @@ export class UserController {
     }
   };
 
+  // 노드메일러 인증코드 확인
   verifyEmail = async (req, res, next) => {
     try {
       const { email, code } = req.body;
