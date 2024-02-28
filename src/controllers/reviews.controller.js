@@ -7,21 +7,21 @@ export class ReviewController {
   postReview = async (req, res, next) => {
     try {
       const { userId } = req.user;
-      const { trainerId } = req.query;
+      const { trainerId } = req.params;
       const { content, rating } = req.body;
 
       if (!userId || !trainerId || !content || !rating) {
         throw new CustomError(404, '작성하신 리뷰 정보가 잘못 되었습니다.');
       }
 
-      const review = await this.reviewService.createReview(trainerId, userId, content, rating);
+      if (rating < 1 || rating > 5) {
+        throw new CustomError(400, '평점은 1~5점 입니다.');
+      }
+
+      const review = await this.reviewService.createReview(userId, trainerId, content, rating);
 
       if (!review) {
         throw new CustomError(404, '리뷰 생성에 실패했습니다.');
-      }
-
-      if (rating < 1 || rating > 5) {
-        throw new CustomError(400, '평점은 1~5점 입니다.');
       }
 
       return res.status(201).json({ data: review });
@@ -32,7 +32,7 @@ export class ReviewController {
 
   getReviews = async (req, res, next) => {
     try {
-      const { trainerId } = req.query;
+      const { trainerId } = req.params;
 
       if (!trainerId) {
         throw new CustomError(404, '알 수 없는 펫시터입니다.');
@@ -64,13 +64,13 @@ export class ReviewController {
         throw new CustomError(400, '평점은 1~5점 입니다.');
       }
 
-      const review = await this.reviewService.findUserIdByReviewId(reviewId);
+      const foundUserId = await this.reviewService.findUserIdByReviewId(reviewId);
 
-      if (!review) {
-        throw new CustomError(404, '해당 리뷰를 찾을 수 없습니다.');
+      if (!foundUserId) {
+        throw new CustomError(404, '해당 리뷰의 사용자를 찾을 수 없습니다.');
       }
 
-      if (user.userId !== review.userId) {
+      if (user.userId !== foundUserId.userId) {
         throw new CustomError(400, '리뷰를 수정할 권한이 없습니다.');
       }
 
@@ -86,7 +86,7 @@ export class ReviewController {
     }
   };
 
-  deleteReview = async (req, res) => {
+  deleteReview = async (req, res, next) => {
     try {
       const { reviewId } = req.params;
       const user = req.user;
@@ -95,9 +95,9 @@ export class ReviewController {
         throw new CustomError(404, '리뷰를 찾을 수 없습니다.');
       }
 
-      const review = await this.reviewService.findUserIdByReviewId(reviewId);
+      const foundUserId = await this.reviewService.findUserIdByReviewId(reviewId);
 
-      if (user.userId !== review.userId) {
+      if (user.userId !== foundUserId.userId) {
         throw new CustomError(400, '리뷰를 수정할 권한이 없습니다.');
       }
 
