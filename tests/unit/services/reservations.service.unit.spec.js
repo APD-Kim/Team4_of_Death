@@ -259,7 +259,6 @@ describe('Reservation Service Unit Test', () => {
       mockReservationRepository.isReservatedDate.mockResolvedValue(true);
       await reservationService.reserveDate(params.userId, params.trainerId, params.startDate, params.endDate);
     } catch (err) {
-      console.log(err.stack);
       expect(err.message).toEqual('이미 예약되어있습니다.');
       expect(err).toBeInstanceOf(CustomError);
       expect(err.statusCode).toEqual(409);

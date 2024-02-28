@@ -104,7 +104,6 @@ describe('User Service Unit Test', () => {
     mockReviewRepository.deleteReview.mockResolvedValue(mockReturn1);
 
     const deleteReview = await reviewService.deleteReview(1);
-    console.log(deleteReview);
     expect(deleteReview).toEqual(mockReturn1);
     expect(mockReviewRepository.deleteReview).toHaveBeenCalledTimes(1);
   });

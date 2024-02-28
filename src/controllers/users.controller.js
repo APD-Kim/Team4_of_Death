@@ -74,19 +74,7 @@ export class UserController {
       next(err);
     }
   };
-  issueRefreshToken = async (req, res, next) => {
-    const { userId } = req.user;
-    const { refreshToken } = req.cookies;
-    if (!refreshToken) {
-      throw new CustomError(400, '리프레시 토큰이 존재하지 않습니다.');
-    }
-    //리프레시 토큰이 있다면
 
-    res.status(200).json({ message: refreshToken });
-  };
-
-  // 노드메일러 인증코드 전송
-  // ../utils/auth.js에 sendMail 정의 되어 있습니다.
   reSendAuthenticationCode = async (req, res, next) => {
     try {
       const { email } = req.params;

@@ -101,7 +101,7 @@ export class UserService {
   uploadImage = async (userId, imageURL) => {
     const uploadImage = await this.userRepository.uploadImage(userId, imageURL);
 
-    console.log(uploadImage);
+
     if (!uploadImage) {
       throw new CustomError(400, '이미지 파일 DB저장에 실패하였습니다.');
     }
