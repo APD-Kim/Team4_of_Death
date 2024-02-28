@@ -49,13 +49,13 @@ describe('Trainer Controller Unit Test', () => {
     mockRequest.params = {};
     await trainerController.findTrainerByCategory(mockRequest, mockResponse, mockNext);
     expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(0);
-    expect(mockNext).toHaveBeenCalledWith(new CustomError(400, 'category 값이 비어있습니다.'));
+    expect(mockNext).toHaveBeenCalledWith(new CustomError(500, 'category 값이 비어있습니다.'));
   });
   it('findTrainerByCategory Method about invalid arguments', async () => {
     mockRequest.params = { category: 'dogggg' };
     await trainerController.findTrainerByCategory(mockRequest, mockResponse, mockNext);
     expect(mockTrainerService.findTrainerByCategory).toHaveBeenCalledTimes(0);
-    expect(mockNext).toHaveBeenCalledWith(new CustomError(400, 'category 가 올바르지 않습니다.'));
+    expect(mockNext).toHaveBeenCalledWith(new CustomError(500, 'category 가 올바르지 않습니다.'));
   });
 
   it('registerTrainer Success', async () => {

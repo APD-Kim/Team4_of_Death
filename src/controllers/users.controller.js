@@ -18,7 +18,7 @@ export class UserController {
       let profileImg = '';
 
       if (!email || !password || !passwordCheck || !name || !phoneNumber || !petCategory) {
-        throw new CustomError(400, '요청이 잘못 되었습니다.');
+        throw new CustomError(401, '요청이 잘못 되었습니다.');
       }
       if (petCategory && !['dog', 'cat', 'bird'].includes(petCategory)) {
         throw new CustomError(400, '적절하지 않은 카테고리입니다.');
@@ -40,11 +40,12 @@ export class UserController {
         data: signedUser,
       });
     } catch (err) {
+      console.log(1, err.message);
+      console.log(1, err);
       if (err.message === `Missing credentials for "PLAIN"`) {
         err.message = '이메일 전송 중 오류가 발생하였습니다.';
       }
       next(err);
-    } finally {
     }
   };
 

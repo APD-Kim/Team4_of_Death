@@ -29,7 +29,7 @@ export class ReservationController {
 
   putReservation = async (req, res, next) => {
     try {
-      const {userId} = req.user;
+      const { userId } = req.user;
       const { reservationId } = req.params;
       const { startDate, endDate } = req.body;
 
@@ -42,7 +42,7 @@ export class ReservationController {
 
   delReservation = async (req, res, next) => {
     try {
-      const {userId} = req.user;
+      const { userId } = req.user;
 
       const { reservationId } = req.params;
       if (!reservationId) {
